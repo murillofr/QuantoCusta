@@ -1,4 +1,4 @@
-# quanto_custa
+# Quanto Custa
 
 Aplicativo de consulta de preços
 

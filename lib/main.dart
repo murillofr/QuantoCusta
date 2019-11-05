@@ -3,7 +3,12 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 
-void main() => runApp(MaterialApp(home: BottomNavBar()));
+void main() => runApp(
+      MaterialApp(
+        home: BottomNavBar(),
+        debugShowCheckedModeBanner: false,
+      ),
+    );
 
 class BottomNavBar extends StatefulWidget {
   @override
@@ -24,8 +29,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         items: <Widget>[
           Icon(Icons.error, size: 40),
           Icon(Icons.monetization_on, size: 40),
-          Icon(CommunityMaterialIcons.barcode_scan, size: 40),
-          Icon(Icons.list, size: 40),
+          Icon(CommunityMaterialIcons.barcode_scan, size: 35),
+          Icon(CommunityMaterialIcons.view_list, size: 40),
         ],
         color: Colors.white,
         buttonBackgroundColor: Colors.white,

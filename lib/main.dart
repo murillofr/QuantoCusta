@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+//import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
@@ -19,7 +19,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _page = 0;
+  int _page = 2;
   GlobalKey _bottomNavigationKey = GlobalKey();
   String _scanBarcode = 'Unknown';
 
@@ -30,7 +30,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   startBarcodeScanStream() async {
     FlutterBarcodeScanner.getBarcodeStreamReceiver(
-            "#ff6666", "Cancel", true, ScanMode.BARCODE)
+            "#ff6666", "Cancelar", true, ScanMode.BARCODE)
         .listen((barcode) => print(barcode));
   }
 
@@ -40,10 +40,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+          "#ff6666", "Cancelar", true, ScanMode.BARCODE);
       print(barcodeScanRes);
     } on Exception {
-      barcodeScanRes = 'Failed to get platform version.';
+      barcodeScanRes = 'Falha ao tentar acessar a câmera.';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -62,17 +62,37 @@ class _BottomNavBarState extends State<BottomNavBar> {
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: 2,
-        height: 75.0,
+        height: 60.0,
         items: <Widget>[
-          Icon(Icons.error, size: 40),
-          Icon(Icons.monetization_on, size: 40),
-          Icon(CommunityMaterialIcons.barcode_scan, size: 35),
-          Icon(CommunityMaterialIcons.view_list, size: 40),
+          Padding(
+            padding: _page == 0
+                ? const EdgeInsets.all(0.0)
+                : const EdgeInsets.only(top: 10.0),
+            child: Icon(Icons.error, size: 40),
+          ),
+          Padding(
+            padding: _page == 1
+                ? const EdgeInsets.all(0.0)
+                : const EdgeInsets.only(top: 10.0),
+            child: Icon(Icons.monetization_on, size: 40),
+          ),
+          Padding(
+            padding: _page == 2
+                ? const EdgeInsets.fromLTRB(4.0, 1.0, 4.0, 4.0)
+                : const EdgeInsets.only(top: 10.0),
+            child: Icon(CommunityMaterialIcons.barcode_scan, size: 35),
+          ),
+          Padding(
+            padding: _page == 3
+                ? const EdgeInsets.all(0.0)
+                : const EdgeInsets.only(top: 10.0),
+            child: Icon(CommunityMaterialIcons.view_list, size: 40),
+          ),
         ],
         color: Colors.white,
         buttonBackgroundColor: Colors.white,
         backgroundColor: Colors.blueAccent,
-        animationCurve: Curves.easeOutCubic,
+        animationCurve: Curves.decelerate,
         animationDuration: Duration(milliseconds: 500),
         onTap: (index) {
           setState(() {
@@ -104,6 +124,21 @@ class _BottomNavBarState extends State<BottomNavBar> {
             direction: Axis.vertical,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Center(
+                child: Card(
+                  child: InkWell(
+                    splashColor: Colors.blue.withAlpha(30),
+                    onTap: () {
+                      print('Card tapped.');
+                    },
+                    child: Container(
+                      width: 300,
+                      height: 100,
+                      child: Text('A card that can be tapped'),
+                    ),
+                  ),
+                ),
+              ),
               RaisedButton(
                 onPressed: () => scanBarcodeNormal(),
                 child: Text("Start barcode scan"),
@@ -120,7 +155,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
         );
       case 3:
-        return new Container(child: Center(child: new Text("Lista de produtos")));
+        return new Container(
+            child: Center(child: new Text("Lista de produtos")));
     }
     return null;
   }

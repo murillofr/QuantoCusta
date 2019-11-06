@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 void main() => runApp(
@@ -26,6 +27,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void _portraitModeOnly() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   startBarcodeScanStream() async {
@@ -58,6 +66,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    _portraitModeOnly();
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
@@ -93,7 +102,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         buttonBackgroundColor: Colors.white,
         backgroundColor: Colors.blueAccent,
         animationCurve: Curves.decelerate,
-        animationDuration: Duration(milliseconds: 500),
+        animationDuration: Duration(milliseconds: 600),
         onTap: (index) {
           setState(() {
             if (_page != index) {
@@ -103,9 +112,32 @@ class _BottomNavBarState extends State<BottomNavBar> {
         },
       ),
       body: Container(
+        padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 30.0),
         color: Colors.blueAccent,
-        child: Center(
-          child: _switcherBody(),
+        child: SafeArea(
+          child: Center(
+            child: ListView(
+              children: <Widget>[
+                _switcherBody(),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: Visibility(
+        visible: _page == 2,
+        child: Container(
+          alignment: Alignment.bottomCenter,
+          padding: EdgeInsets.fromLTRB(32.0, 0.0, 0.0, 14.0),
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              scanBarcodeNormal();
+            },
+            label: Text('ESCANEAR CÓDIGO DE BARRAS'),
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            splashColor: Colors.blue.withAlpha(30),
+          ),
         ),
       ),
     );
@@ -122,34 +154,31 @@ class _BottomNavBarState extends State<BottomNavBar> {
           alignment: Alignment.center,
           child: Flex(
             direction: Axis.vertical,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Center(
                 child: Card(
-                  child: InkWell(
-                    splashColor: Colors.blue.withAlpha(30),
-                    onTap: () {
-                      print('Card tapped.');
-                    },
-                    child: Container(
-                      width: 300,
-                      height: 100,
-                      child: Text('A card that can be tapped'),
+                  color: Color.fromRGBO(255, 200, 128, 1.0),
+                  margin: EdgeInsets.only(bottom: 7.0),
+                  child: Container(
+                    constraints: BoxConstraints(
+                        minWidth: 100,
+                        maxWidth: 600,
+                        minHeight: 100,
+                        maxHeight: 200),
+                    width: 3000,
+                    height: 3000,
+                    child: Center(
+                      child: Text('Imagem do produto'),
                     ),
                   ),
                 ),
               ),
-              RaisedButton(
-                onPressed: () => scanBarcodeNormal(),
-                child: Text("Start barcode scan"),
-              ),
-              RaisedButton(
-                onPressed: () => startBarcodeScanStream(),
-                child: Text("Start barcode scan stream"),
-              ),
-              Text(
-                'Scan result : $_scanBarcode\n',
-                style: TextStyle(fontSize: 20),
+              Container(
+                child: Text(
+                  '$_scanBarcode',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ],
           ),

@@ -22,7 +22,7 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _page = 2;
   GlobalKey _bottomNavigationKey = GlobalKey();
-  String _scanBarcode = '-1';
+  String _scanBarcode = "";
 
   @override
   void initState() {
@@ -60,7 +60,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     if (!mounted) return;
 
     setState(() {
-      _scanBarcode = barcodeScanRes;
+      if (barcodeScanRes != "-1") {
+        _scanBarcode = barcodeScanRes;
+      }
     });
   }
 
@@ -101,7 +103,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ],
         color: Colors.blueAccent,
         buttonBackgroundColor: Colors.blueAccent,
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xffd6f6ff),
         animationCurve: Curves.decelerate,
         animationDuration: Duration(milliseconds: 600),
         onTap: (index) {
@@ -120,7 +122,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 : _page == 2
                     ? EdgeInsets.only(bottom: 80.0)
                     : const EdgeInsets.all(10.0),
-        color: Colors.white,
+        color: Color(0xffd6f6ff),
         child: SafeArea(
           child: Center(
             child: ListView(
@@ -132,12 +134,27 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     ),
                     Center(
                       child: Container(
-                        margin: EdgeInsets.only(top: 187.0),
+                        width: '$_scanBarcode' == '' ? 0 : null,
+                        margin: EdgeInsets.only(top: 178.0),
                         child: _page == 2
                             ? Container(
+                                padding: const EdgeInsets.all(5.0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Color(0xffd6f6ff),
+                                    width: 5.0,
+                                  ),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(30.0),
+                                  ),
+                                  color: Color(0xffd6f6ff),
+                                ),
                                 child: Text(
                                   '$_scanBarcode',
-                                  style: TextStyle(fontSize: 20),
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               )
                             : null,
@@ -156,13 +173,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
           alignment: Alignment.bottomCenter,
           padding: EdgeInsets.fromLTRB(32.0, 0.0, 0.0, 14.0),
           child: FloatingActionButton.extended(
+            elevation: 0,
             onPressed: () {
               scanBarcodeNormal();
             },
             label: Text('ESCANEAR CÓDIGO DE BARRAS'),
-            backgroundColor: Color.fromRGBO(255, 200, 128, 1.0),
+            backgroundColor: Colors.orangeAccent,
             foregroundColor: Colors.black,
-            splashColor: Colors.blue.withAlpha(30),
+            splashColor: Colors.orange,
           ),
         ),
       ),
@@ -187,16 +205,46 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 children: [
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.all(0.0),
+                      padding: EdgeInsets.all(10.0),
                       height: 200,
-                      color: Colors.lightBlue,
+                      color: Colors.white,
                       child: Flex(
                         direction: Axis.horizontal,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Image.network(
-                              'https://www.google.com.br/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'),
+                          Visibility(
+                            visible: '$_scanBarcode' == '',
+                            child: Container(
+                              child: Text('LOGO DO APP'),
+                            ),
+                          ),
+                          Visibility(
+                            visible: '$_scanBarcode' != '',
+                            child: Container(
+                              child: Image.network(
+                                'https://www.google.com.br/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
+                                loadingBuilder: (
+                                  BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent loadingProgress,
+                                ) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress
+                                                  .expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -204,33 +252,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 0.0),
                 child: Flex(
                   direction: Axis.vertical,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    Text(
-                        '____________________________________________________________________________'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
-                    Text('data'),
                     Text('data'),
                   ],
                 ),

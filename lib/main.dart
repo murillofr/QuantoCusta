@@ -22,7 +22,7 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _page = 2;
   GlobalKey _bottomNavigationKey = GlobalKey();
-  String _scanBarcode = 'Unknown';
+  String _scanBarcode = '-1';
 
   @override
   void initState() {
@@ -75,15 +75,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
         items: <Widget>[
           Padding(
             padding: _page == 0
-                ? const EdgeInsets.all(0.0)
+                ? const EdgeInsets.all(2.5)
                 : const EdgeInsets.only(top: 10.0),
-            child: Icon(Icons.error, size: 40),
+            child: Icon(Icons.error_outline, size: 35),
           ),
           Padding(
             padding: _page == 1
                 ? const EdgeInsets.all(0.0)
                 : const EdgeInsets.only(top: 10.0),
-            child: Icon(Icons.monetization_on, size: 40),
+            child: Icon(Icons.person_outline, size: 40),
           ),
           Padding(
             padding: _page == 2
@@ -93,14 +93,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           Padding(
             padding: _page == 3
-                ? const EdgeInsets.all(0.0)
+                ? const EdgeInsets.fromLTRB(4.0, 0.9, 4.0, 4.1)
                 : const EdgeInsets.only(top: 10.0),
-            child: Icon(CommunityMaterialIcons.view_list, size: 40),
+            child:
+                Icon(CommunityMaterialIcons.clipboard_text_outline, size: 35),
           ),
         ],
-        color: Colors.white,
-        buttonBackgroundColor: Colors.white,
-        backgroundColor: Colors.blueAccent,
+        color: Colors.blueAccent,
+        buttonBackgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.white,
         animationCurve: Curves.decelerate,
         animationDuration: Duration(milliseconds: 600),
         onTap: (index) {
@@ -112,13 +113,38 @@ class _BottomNavBarState extends State<BottomNavBar> {
         },
       ),
       body: Container(
-        padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 30.0),
-        color: Colors.blueAccent,
+        padding: _page == 0
+            ? const EdgeInsets.all(10.0)
+            : _page == 1
+                ? const EdgeInsets.all(10.0)
+                : _page == 2
+                    ? EdgeInsets.only(bottom: 80.0)
+                    : const EdgeInsets.all(10.0),
+        color: Colors.white,
         child: SafeArea(
           child: Center(
             child: ListView(
               children: <Widget>[
-                _switcherBody(),
+                Stack(
+                  children: <Widget>[
+                    Center(
+                      child: _switcherBody(),
+                    ),
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(top: 187.0),
+                        child: _page == 2
+                            ? Container(
+                                child: Text(
+                                  '$_scanBarcode',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              )
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -134,7 +160,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               scanBarcodeNormal();
             },
             label: Text('ESCANEAR CÓDIGO DE BARRAS'),
-            backgroundColor: Colors.white,
+            backgroundColor: Color.fromRGBO(255, 200, 128, 1.0),
             foregroundColor: Colors.black,
             splashColor: Colors.blue.withAlpha(30),
           ),
@@ -148,36 +174,65 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 0:
         return new Container(child: Center(child: new Text("Envio de erros")));
       case 1:
-        return new Container(child: Center(child: new Text("Cupons")));
+        return new Container(child: Center(child: new Text("Perfil")));
       case 2:
         return new Container(
           alignment: Alignment.center,
           child: Flex(
             direction: Axis.vertical,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Center(
-                child: Card(
-                  color: Color.fromRGBO(255, 200, 128, 1.0),
-                  margin: EdgeInsets.only(bottom: 7.0),
-                  child: Container(
-                    constraints: BoxConstraints(
-                        minWidth: 100,
-                        maxWidth: 600,
-                        minHeight: 100,
-                        maxHeight: 200),
-                    width: 3000,
-                    height: 3000,
-                    child: Center(
-                      child: Text('Imagem do produto'),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(0.0),
+                      height: 200,
+                      color: Colors.lightBlue,
+                      child: Flex(
+                        direction: Axis.horizontal,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Image.network(
+                              'https://www.google.com.br/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-              Container(
-                child: Text(
-                  '$_scanBarcode',
-                  style: TextStyle(fontSize: 20),
+              Padding(
+                padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+                child: Flex(
+                  direction: Axis.vertical,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                        '____________________________________________________________________________'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                    Text('data'),
+                  ],
                 ),
               ),
             ],

@@ -1,33 +1,40 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:quanto_custa/alertPage.dart';
+import 'package:quanto_custa/perfilPage.dart';
+import 'package:quanto_custa/barcodePage.dart';
+import 'package:quanto_custa/scan.dart';
+import 'package:quanto_custa/listaProdutosPage.dart';
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
+final routeObserver = RouteObserver<PageRoute>();
+final duration = const Duration(milliseconds: 300);
 
 void main() => runApp(
       MaterialApp(
-        home: BottomNavBar(),
+        home: HomePage(),
+        navigatorObservers: [routeObserver],
         debugShowCheckedModeBanner: false,
       ),
     );
 
-class BottomNavBar extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _HomePageState extends State<HomePage> with RouteAware {
   int _page = 2;
+  GlobalKey _fabKey = GlobalKey();
+  bool _fabVisible = true;
+  String _resultBarcode = "";
   GlobalKey _bottomNavigationKey = GlobalKey();
-  String _scanBarcode = "";
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  String inOutScan = '';
 
   void _portraitModeOnly() {
     SystemChrome.setPreferredOrientations([
@@ -36,76 +43,61 @@ class _BottomNavBarState extends State<BottomNavBar> {
     ]);
   }
 
-  startBarcodeScanStream() async {
-    FlutterBarcodeScanner.getBarcodeStreamReceiver(
-            "#ff6666", "Cancelar", true, ScanMode.BARCODE)
-        .listen((barcode) => print(barcode));
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "Cancelar", true, ScanMode.BARCODE);
-      print(barcodeScanRes);
-    } on Exception {
-      barcodeScanRes = 'Falha ao tentar acessar a câmera.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      if (barcodeScanRes != "-1") {
-        _scanBarcode = barcodeScanRes;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     _portraitModeOnly();
-    return Scaffold(
+    return new Scaffold(
+      body: Container(
+        color: Colors.yellow[200],
+        child: SafeArea(
+          child: Container(
+            margin: _page == 0
+                ? const EdgeInsets.only(bottom: 16.0)
+                : _page == 1
+                    ? const EdgeInsets.only(bottom: 16.0)
+                    : _page == 2
+                        ? EdgeInsets.only(bottom: 66.0)
+                        : const EdgeInsets.only(bottom: 16.0),
+            child: _switcherBody(),
+          ),
+        ),
+      ),
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: 2,
         height: 60.0,
+        color: Colors.blueAccent,
+        buttonBackgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.yellow[200],
+        animationCurve: Curves.decelerate,
+        animationDuration: Duration(milliseconds: 300),
         items: <Widget>[
           Padding(
             padding: _page == 0
-                ? const EdgeInsets.all(2.5)
+                ? const EdgeInsets.all(1.4)
                 : const EdgeInsets.only(top: 10.0),
-            child: Icon(Icons.error_outline, size: 35),
+            child: Icon(Icons.error_outline, size: 30),
           ),
           Padding(
             padding: _page == 1
-                ? const EdgeInsets.all(0.0)
+                ? const EdgeInsets.all(1.4)
                 : const EdgeInsets.only(top: 10.0),
-            child: Icon(Icons.person_outline, size: 40),
+            child: Icon(Icons.person_outline, size: 30),
           ),
           Padding(
             padding: _page == 2
-                ? const EdgeInsets.fromLTRB(4.0, 1.0, 4.0, 4.0)
+                ? const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 3.0)
                 : const EdgeInsets.only(top: 10.0),
-            child: Icon(CommunityMaterialIcons.barcode_scan, size: 35),
+            child: Icon(CommunityMaterialIcons.barcode_scan, size: 30),
           ),
           Padding(
             padding: _page == 3
-                ? const EdgeInsets.fromLTRB(4.0, 0.9, 4.0, 4.1)
+                ? const EdgeInsets.fromLTRB(1.1, 0.0, 1.1, 3.5)
                 : const EdgeInsets.only(top: 10.0),
             child:
-                Icon(CommunityMaterialIcons.clipboard_text_outline, size: 35),
+                Icon(CommunityMaterialIcons.clipboard_text_outline, size: 30),
           ),
         ],
-        color: Colors.blueAccent,
-        buttonBackgroundColor: Colors.blueAccent,
-        backgroundColor: Color(0xffd6f6ff),
-        animationCurve: Curves.decelerate,
-        animationDuration: Duration(milliseconds: 600),
         onTap: (index) {
           setState(() {
             if (_page != index) {
@@ -114,160 +106,178 @@ class _BottomNavBarState extends State<BottomNavBar> {
           });
         },
       ),
-      body: Container(
-        padding: _page == 0
-            ? const EdgeInsets.all(10.0)
-            : _page == 1
-                ? const EdgeInsets.all(10.0)
-                : _page == 2
-                    ? EdgeInsets.only(bottom: 80.0)
-                    : const EdgeInsets.all(10.0),
-        color: Color(0xffd6f6ff),
-        child: SafeArea(
-          child: Center(
-            child: ListView(
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    Center(
-                      child: _switcherBody(),
-                    ),
-                    Center(
-                      child: Container(
-                        width: '$_scanBarcode' == '' ? 0 : null,
-                        margin: EdgeInsets.only(top: 178.0),
-                        child: _page == 2
-                            ? Container(
-                                padding: const EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Color(0xffd6f6ff),
-                                    width: 5.0,
-                                  ),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(30.0),
-                                  ),
-                                  color: Color(0xffd6f6ff),
-                                ),
-                                child: Text(
-                                  '$_scanBarcode',
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            : null,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Visibility(
-        visible: _page == 2,
-        child: Container(
-          alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.fromLTRB(32.0, 0.0, 0.0, 14.0),
-          child: FloatingActionButton.extended(
-            elevation: 0,
-            onPressed: () {
-              scanBarcodeNormal();
-            },
-            label: Text('ESCANEAR CÓDIGO DE BARRAS'),
-            backgroundColor: Colors.orangeAccent,
-            foregroundColor: Colors.black,
-            splashColor: Colors.orange,
-          ),
-        ),
+        visible: _fabVisible && _page == 2,
+        child: _buildFAB(context, key: _fabKey),
       ),
     );
   }
 
   Widget _switcherBody() {
-    switch (_page) {
-      case 0:
-        return new Container(child: Center(child: new Text("Envio de erros")));
-      case 1:
-        return new Container(child: Center(child: new Text("Perfil")));
-      case 2:
-        return new Container(
-          alignment: Alignment.center,
-          child: Flex(
-            direction: Axis.vertical,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(10.0),
-                      height: 200,
-                      color: Colors.white,
-                      child: Flex(
-                        direction: Axis.horizontal,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Visibility(
-                            visible: '$_scanBarcode' == '',
-                            child: Container(
-                              child: Text('LOGO DO APP'),
-                            ),
-                          ),
-                          Visibility(
-                            visible: '$_scanBarcode' != '',
-                            child: Container(
-                              child: Image.network(
-                                'https://www.google.com.br/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
-                                loadingBuilder: (
-                                  BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent loadingProgress,
-                                ) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 0.0),
-                child: Flex(
-                  direction: Axis.vertical,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text('data'),
-                  ],
-                ),
-              ),
-            ],
+    return new Stack(
+      children: <Widget>[
+        new Offstage(
+          offstage: _page != 0,
+          child: new TickerMode(
+            enabled: _page == 0,
+            child: new MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: new AlertPage(),
+            ),
           ),
-        );
-      case 3:
-        return new Container(
-            child: Center(child: new Text("Lista de produtos")));
+        ),
+        new Offstage(
+          offstage: _page != 1,
+          child: new TickerMode(
+            enabled: _page == 1,
+            child: new MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: new PerfilPage(),
+            ),
+          ),
+        ),
+        new Offstage(
+          offstage: _page != 2,
+          child: new TickerMode(
+            enabled: _page == 2,
+            child: new MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: new BarcodePage(
+                resultBarcode: '$_resultBarcode',
+                inOutScan: '$inOutScan',
+              ),
+            ),
+          ),
+        ),
+        new Offstage(
+          offstage: _page != 3,
+          child: new TickerMode(
+            enabled: _page == 3,
+            child: new MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: new ListaProdutosPage(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    routeObserver.unsubscribe(this);
+  }
+
+  @override
+  didPopNext() {
+    // Show back the FAB on transition back ended
+    Timer(duration, () {
+      setState(() => _fabVisible = true);
+    });
+  }
+
+  Widget _buildFAB(context, {key}) => Container(
+        child: FloatingActionButton.extended(
+          label: Text('ESCANEAR CÓDIGO DE BARRAS'),
+          elevation: 0,
+          backgroundColor: Colors.black,
+          key: key,
+          onPressed: () => {
+            _onFabTap(context),
+            inOutScan = 'in',
+          },
+        ),
+      );
+
+  _onFabTap(BuildContext context) async {
+    // Hide the FAB on transition start
+    setState(() => _fabVisible = false);
+
+    final RenderBox fabRenderBox = _fabKey.currentContext.findRenderObject();
+    final fabSize = fabRenderBox.size;
+    final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
+
+    final resultBarcode = await Navigator.of(context).push(
+      PageRouteBuilder(
+        transitionDuration: duration,
+        pageBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation) =>
+            Scan(),
+        transitionsBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation, Widget child) =>
+            _buildTransition(child, animation, fabSize, fabOffset),
+      ),
+    );
+    if (resultBarcode != "-1") {
+      _resultBarcode = resultBarcode;
+      inOutScan = 'out';
     }
-    return null;
+    print('VAI PRINTAR');
+    print(_resultBarcode);
+  }
+
+  Widget _buildTransition(
+    Widget page,
+    Animation<double> animation,
+    Size fabSize,
+    Offset fabOffset,
+  ) {
+    if (animation.value == 1) return page;
+
+    final borderTween = BorderRadiusTween(
+      begin: BorderRadius.circular(fabSize.width / 2),
+      end: BorderRadius.circular(0.0),
+    );
+    final sizeTween = SizeTween(
+      begin: fabSize,
+      end: MediaQuery.of(context).size,
+    );
+    final offsetTween = Tween<Offset>(
+      begin: fabOffset,
+      end: Offset.zero,
+    );
+
+    final easeInAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeIn,
+    );
+    final easeAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOut,
+    );
+
+    final radius = borderTween.evaluate(easeInAnimation);
+    final offset = offsetTween.evaluate(animation);
+    final size = sizeTween.evaluate(easeInAnimation);
+
+    final transitionFab = Opacity(
+      opacity: 1 - easeAnimation.value,
+      child: _buildFAB(context),
+    );
+
+    Widget positionedClippedChild(Widget child) => Positioned(
+        width: size.width,
+        height: size.height,
+        left: offset.dx,
+        top: offset.dy,
+        child: ClipRRect(
+          borderRadius: radius,
+          child: child,
+        ));
+
+    return Stack(
+      children: [
+        positionedClippedChild(page),
+        positionedClippedChild(transitionFab),
+      ],
+    );
   }
 }

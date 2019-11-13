@@ -4,25 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
-void main() => runApp(Scan());
+void main() => runApp(ScanPage());
 
-class Scan extends StatefulWidget {
+class ScanPage extends StatefulWidget {
   @override
-  _ScanState createState() => _ScanState();
+  _ScanPageState createState() => _ScanPageState();
 }
 
-class _ScanState extends State<Scan> {
+class _ScanPageState extends State<ScanPage> {
   String _scanBarcode = '';
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      const Duration(milliseconds: 3000),
-      () {
-        scanBarcodeNormal();
-      },
-    );
+    scanBarcodeNormal();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.

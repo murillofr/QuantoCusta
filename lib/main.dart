@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             enabled: _page == 0,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: AlertPage(),
+              home: AlertPage(page: _page),
             ),
           ),
         ),
@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             enabled: _page == 1,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: PerfilPage(),
+              home: PerfilPage(page: _page),
             ),
           ),
         ),
@@ -163,6 +163,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
               home: BarcodePage(
                 resultBarcode: '$_resultBarcode',
                 inOutScan: '$inOutScan',
+                page: _page,
               ),
             ),
           ),
@@ -173,7 +174,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             enabled: _page == 3,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: ListaProdutosPage(),
+              home: ListaProdutosPage(page: _page),
             ),
           ),
         ),

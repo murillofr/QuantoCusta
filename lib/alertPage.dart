@@ -23,19 +23,21 @@ class _AlertPageState extends State<AlertPage> {
   void didUpdateWidget(AlertPage oldWidget) {
     setState(() {
       if (widget.page == 0) {
-        if (coordX == 0.0) {
-          animationDuration = Duration(milliseconds: 0);
-          coordX = -MediaQuery.of(context).size.width;
-          
-          Timer(Duration(milliseconds: 1), () {
-            setState(() => {
-                  animationDuration = Duration(milliseconds: 200),
-                  coordX = 0.0,
-                });
-          });
-        } else {
-          animationDuration = Duration(milliseconds: 200);
-          coordX = 0.0;
+        if (widget.page != oldWidget.page) {
+          if (coordX == 0.0) {
+            animationDuration = Duration(milliseconds: 0);
+            coordX = -MediaQuery.of(context).size.width;
+
+            Timer(Duration(milliseconds: 1), () {
+              setState(() => {
+                    animationDuration = Duration(milliseconds: 200),
+                    coordX = 0.0,
+                  });
+            });
+          } else {
+            animationDuration = Duration(milliseconds: 200);
+            coordX = 0.0;
+          }
         }
       }
     });

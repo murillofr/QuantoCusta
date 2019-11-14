@@ -104,6 +104,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
               ),
             ],
             onTap: (index) {
+              print(_page);
+              print(index);
               setState(() {
                 if (_page != index) {
                   _page = index;

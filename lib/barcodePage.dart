@@ -34,31 +34,33 @@ class _BarcodePageState extends State<BarcodePage> {
   void didUpdateWidget(BarcodePage oldWidget) {
     setState(() {
       if (widget.page == 2) {
-        if (coordX == 0.0) {
-          animationDuration = Duration(milliseconds: 0);
-          coordX = oldWidget.page == 3
-              ? -MediaQuery.of(context).size.width
-              : MediaQuery.of(context).size.width;
-
-          Timer(Duration(milliseconds: 1), () {
-            setState(() => {
-                  animationDuration = Duration(milliseconds: 200),
-                  coordX = 0.0,
-                });
-          });
+        if (widget.page != oldWidget.page) {
+          if (coordX == 0.0) {
+            animationDuration = Duration(milliseconds: 0);
+            coordX = oldWidget.page == 3
+                ? -MediaQuery.of(context).size.width
+                : MediaQuery.of(context).size.width;
+            Timer(Duration(milliseconds: 1), () {
+              setState(() => {
+                    animationDuration = Duration(milliseconds: 200),
+                    coordX = 0.0,
+                  });
+            });
+          } else {
+            animationDuration = Duration(milliseconds: 200);
+            coordX = 0.0;
+          }
         } else {
-          animationDuration = Duration(milliseconds: 200);
-          coordX = 0.0;
+          // Verifica se é a primeira vez que o scan está sendo chamado
+          if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
+            print('------------------IF------------------');
+            _switchCoverPhoto();
+          } else {
+            print('------------------ELSE------------------');
+          }
         }
       }
     });
-
-    if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
-      print('------------------IF------------------');
-      _switchCoverPhoto();
-    } else {
-      print('------------------ELSE------------------');
-    }
     super.didUpdateWidget(oldWidget);
   }
 

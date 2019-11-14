@@ -23,19 +23,23 @@ class _PerfilPageState extends State<PerfilPage> {
   void didUpdateWidget(PerfilPage oldWidget) {
     setState(() {
       if (widget.page == 1) {
-        if (coordX == 0.0) {
-          animationDuration = Duration(milliseconds: 0);
-          coordX = oldWidget.page == 0 ? MediaQuery.of(context).size.width : -MediaQuery.of(context).size.width;
-          
-          Timer(Duration(milliseconds: 1), () {
-            setState(() => {
-                  animationDuration = Duration(milliseconds: 200),
-                  coordX = 0.0,
-                });
-          });
-        } else {
-          animationDuration = Duration(milliseconds: 200);
-          coordX = 0.0;
+        if (widget.page != oldWidget.page) {
+          if (coordX == 0.0) {
+            animationDuration = Duration(milliseconds: 0);
+            coordX = oldWidget.page == 0
+                ? MediaQuery.of(context).size.width
+                : -MediaQuery.of(context).size.width;
+
+            Timer(Duration(milliseconds: 1), () {
+              setState(() => {
+                    animationDuration = Duration(milliseconds: 200),
+                    coordX = 0.0,
+                  });
+            });
+          } else {
+            animationDuration = Duration(milliseconds: 200);
+            coordX = 0.0;
+          }
         }
       }
     });

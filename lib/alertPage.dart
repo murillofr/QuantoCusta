@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class AlertPage extends StatefulWidget {
   final int page;
+  final int pageAntiga;
 
-  const AlertPage({Key key, this.page}) : super(key: key);
+  const AlertPage({Key key, this.page, this.pageAntiga}) : super(key: key);
 
   @override
   _AlertPageState createState() => _AlertPageState();
@@ -26,7 +27,9 @@ class _AlertPageState extends State<AlertPage> {
         if (widget.page != oldWidget.page) {
           if (coordX == 0.0) {
             animationDuration = Duration(milliseconds: 0);
-            coordX = -MediaQuery.of(context).size.width;
+            coordX = widget.pageAntiga == 3
+                ? MediaQuery.of(context).size.width
+                : -MediaQuery.of(context).size.width;
 
             Timer(Duration(milliseconds: 1), () {
               setState(() => {

@@ -33,11 +33,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with RouteAware {
   GlobalKey _bottomNavigationKey = GlobalKey();
   int _page = 2;
+  int _pageAntiga = 2;
   GlobalKey rectGetterKey = RectGetter.createGlobalKey();
   Rect rect;
   bool _fabVisible = true;
   String _resultBarcode = "";
   String inOutScan = '';
+  double coordX = 0.0;
+  Duration animationDurationFloatingButton = Duration(milliseconds: 200);
+  DragStartDetails startHorizontalDragDetails;
+  DragUpdateDetails updateHorizontalDragDetails;
 
   void _portraitModeOnly() {
     SystemChrome.setPreferredOrientations([
@@ -104,29 +109,67 @@ class _HomePageState extends State<HomePage> with RouteAware {
               ),
             ],
             onTap: (index) {
-              print(_page);
-              print(index);
               setState(() {
                 if (_page != index) {
+                  _pageAntiga = _page;
                   _page = index;
+
+                  if (_page == 2) {
+                    if ((_pageAntiga == 0 && _page == 2) ||
+                        ((_pageAntiga == 1 && _page == 2))) {
+                      animationDurationFloatingButton =
+                          Duration(milliseconds: 0);
+                      _fabVisible = false;
+                      coordX = MediaQuery.of(context).size.width;
+
+                      Timer(Duration(milliseconds: 50), () {
+                        setState(() => {
+                              animationDurationFloatingButton =
+                                  Duration(milliseconds: 200),
+                              _fabVisible = true,
+                              coordX = 0.0,
+                            });
+                      });
+                    }
+                    if (_pageAntiga == 3 && _page == 2) {
+                      animationDurationFloatingButton =
+                          Duration(milliseconds: 0);
+                      _fabVisible = false;
+                      coordX = -MediaQuery.of(context).size.width;
+
+                      Timer(Duration(milliseconds: 50), () {
+                        setState(() => {
+                              animationDurationFloatingButton =
+                                  Duration(milliseconds: 200),
+                              _fabVisible = true,
+                              coordX = 0.0,
+                            });
+                      });
+                    }
+                  } else {
+                    _fabVisible = false;
+                  }
                 }
               });
             },
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: Visibility(
-            visible: _fabVisible && _page == 2,
-            child: RectGetter(
-              key: rectGetterKey,
-              child: FloatingActionButton.extended(
-                label: Text('ESCANEAR CÓDIGO DE BARRAS'),
-                onPressed: _onTapScan,
-                elevation: 0,
-                backgroundColor: Colors.black,
-              ),
-            ),
-          ),
+          floatingActionButton: AnimatedContainer(
+              duration: animationDurationFloatingButton,
+              transform: Matrix4.translationValues(coordX, 0.0, 0.0),
+              child: Visibility(
+                visible: _fabVisible,
+                child: RectGetter(
+                  key: rectGetterKey,
+                  child: FloatingActionButton.extended(
+                    label: Text('ESCANEAR CÓDIGO DE BARRAS'),
+                    onPressed: _onTapScan,
+                    elevation: 0,
+                    backgroundColor: Colors.black,
+                  ),
+                ),
+              )),
         ),
         _ripple(),
       ],
@@ -140,9 +183,41 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 0,
           child: TickerMode(
             enabled: _page == 0,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: AlertPage(page: _page),
+            child: GestureDetector(
+              onHorizontalDragStart: (dragDetails) {
+                startHorizontalDragDetails = dragDetails;
+              },
+              onHorizontalDragUpdate: (dragDetails) {
+                updateHorizontalDragDetails = dragDetails;
+              },
+              onHorizontalDragEnd: (endDetails) {
+                double dx = updateHorizontalDragDetails.globalPosition.dx -
+                    startHorizontalDragDetails.globalPosition.dx;
+                double dy = updateHorizontalDragDetails.globalPosition.dy -
+                    startHorizontalDragDetails.globalPosition.dy;
+                double velocity = endDetails.primaryVelocity;
+
+                //Convert values to be positive
+                if (dx < 0) dx = -dx;
+                if (dy < 0) dy = -dy;
+
+                final CurvedNavigationBarState navBarState =
+                    _bottomNavigationKey.currentState;
+                if (velocity < 0) {
+                  print('DIREITA PARA ESQUERDA');
+                  navBarState.setPage(1);
+                } else {
+                  print('ESQUERDA PARA DIREITA');
+                  navBarState.setPage(3);
+                }
+              },
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: AlertPage(
+                  page: _page,
+                  pageAntiga: _pageAntiga,
+                ),
+              ),
             ),
           ),
         ),
@@ -150,9 +225,38 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 1,
           child: TickerMode(
             enabled: _page == 1,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: PerfilPage(page: _page),
+            child: GestureDetector(
+              onHorizontalDragStart: (dragDetails) {
+                startHorizontalDragDetails = dragDetails;
+              },
+              onHorizontalDragUpdate: (dragDetails) {
+                updateHorizontalDragDetails = dragDetails;
+              },
+              onHorizontalDragEnd: (endDetails) {
+                double dx = updateHorizontalDragDetails.globalPosition.dx -
+                    startHorizontalDragDetails.globalPosition.dx;
+                double dy = updateHorizontalDragDetails.globalPosition.dy -
+                    startHorizontalDragDetails.globalPosition.dy;
+                double velocity = endDetails.primaryVelocity;
+
+                //Convert values to be positive
+                if (dx < 0) dx = -dx;
+                if (dy < 0) dy = -dy;
+
+                final CurvedNavigationBarState navBarState =
+                    _bottomNavigationKey.currentState;
+                if (velocity < 0) {
+                  print('DIREITA PARA ESQUERDA');
+                  navBarState.setPage(2);
+                } else {
+                  print('ESQUERDA PARA DIREITA');
+                  navBarState.setPage(0);
+                }
+              },
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: PerfilPage(page: _page),
+              ),
             ),
           ),
         ),
@@ -162,10 +266,39 @@ class _HomePageState extends State<HomePage> with RouteAware {
             enabled: _page == 2,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: BarcodePage(
-                resultBarcode: '$_resultBarcode',
-                inOutScan: '$inOutScan',
-                page: _page,
+              home: GestureDetector(
+                onHorizontalDragStart: (dragDetails) {
+                  startHorizontalDragDetails = dragDetails;
+                },
+                onHorizontalDragUpdate: (dragDetails) {
+                  updateHorizontalDragDetails = dragDetails;
+                },
+                onHorizontalDragEnd: (endDetails) {
+                  double dx = updateHorizontalDragDetails.globalPosition.dx -
+                      startHorizontalDragDetails.globalPosition.dx;
+                  double dy = updateHorizontalDragDetails.globalPosition.dy -
+                      startHorizontalDragDetails.globalPosition.dy;
+                  double velocity = endDetails.primaryVelocity;
+
+                  //Convert values to be positive
+                  if (dx < 0) dx = -dx;
+                  if (dy < 0) dy = -dy;
+
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
+                  if (velocity < 0) {
+                    print('DIREITA PARA ESQUERDA');
+                    navBarState.setPage(3);
+                  } else {
+                    print('ESQUERDA PARA DIREITA');
+                    navBarState.setPage(1);
+                  }
+                },
+                child: BarcodePage(
+                  resultBarcode: '$_resultBarcode',
+                  inOutScan: '$inOutScan',
+                  page: _page,
+                ),
               ),
             ),
           ),
@@ -174,9 +307,39 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 3,
           child: TickerMode(
             enabled: _page == 3,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: ListaProdutosPage(page: _page),
+            child: GestureDetector(
+              onHorizontalDragStart: (dragDetails) {
+                startHorizontalDragDetails = dragDetails;
+              },
+              onHorizontalDragUpdate: (dragDetails) {
+                updateHorizontalDragDetails = dragDetails;
+              },
+              onHorizontalDragEnd: (endDetails) {
+                double dx = updateHorizontalDragDetails.globalPosition.dx -
+                    startHorizontalDragDetails.globalPosition.dx;
+                double dy = updateHorizontalDragDetails.globalPosition.dy -
+                    startHorizontalDragDetails.globalPosition.dy;
+                double velocity = endDetails.primaryVelocity;
+
+                //Convert values to be positive
+                if (dx < 0) dx = -dx;
+                if (dy < 0) dy = -dy;
+
+                final CurvedNavigationBarState navBarState =
+                    _bottomNavigationKey.currentState;
+                if (velocity < 0) {
+                  navBarState.setPage(0);
+                } else {
+                  navBarState.setPage(2);
+                }
+              },
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: ListaProdutosPage(
+                  page: _page,
+                  pageAntiga: _pageAntiga,
+                ),
+              ),
             ),
           ),
         ),
@@ -210,16 +373,18 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   void _onTapScan() async {
-    setState(() {
-      inOutScan = 'in';
-      _fabVisible = true;
-      rect = RectGetter.getRectFromKey(rectGetterKey);
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() =>
-          rect = rect.inflate(1.3 * MediaQuery.of(context).size.longestSide));
-      Future.delayed(animationDuration + delay, _goToScanPage);
-    });
+    if (_page == 2) {
+      setState(() {
+        inOutScan = 'in';
+        _fabVisible = true;
+        rect = RectGetter.getRectFromKey(rectGetterKey);
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() =>
+            rect = rect.inflate(1.3 * MediaQuery.of(context).size.longestSide));
+        Future.delayed(animationDuration + delay, _goToScanPage);
+      });
+    }
   }
 
   Future _goToScanPage() async {
@@ -229,7 +394,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
       _resultBarcode = resultBarcode;
       inOutScan = 'out';
     }
-    print('VAI PRINTAR');
     print(_resultBarcode);
   }
 

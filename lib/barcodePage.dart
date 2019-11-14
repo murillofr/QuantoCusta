@@ -53,10 +53,8 @@ class _BarcodePageState extends State<BarcodePage> {
         } else {
           // Verifica se é a primeira vez que o scan está sendo chamado
           if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
-            print('------------------IF------------------');
             _switchCoverPhoto();
           } else {
-            print('------------------ELSE------------------');
           }
         }
       }

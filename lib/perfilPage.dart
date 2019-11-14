@@ -52,7 +52,7 @@ class _PerfilPageState extends State<PerfilPage> {
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
       child: Scaffold(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.greenAccent,
         body: Center(
           child: Text('PERFIL'),
         ),

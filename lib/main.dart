@@ -34,10 +34,11 @@ class _HomePageState extends State<HomePage> with RouteAware {
   GlobalKey _bottomNavigationKey = GlobalKey();
   int _page = 2;
   int _pageAntiga = 2;
+  String _controleTransicao = '';
   GlobalKey rectGetterKey = RectGetter.createGlobalKey();
   Rect rect;
   bool _fabVisible = true;
-  String _resultBarcode = "";
+  String _resultBarcode = '';
   String inOutScan = '';
   double coordX = 0.0;
   Duration animationDurationFloatingButton = Duration(milliseconds: 200);
@@ -113,6 +114,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 if (_page != index) {
                   _pageAntiga = _page;
                   _page = index;
+                  _controleTransicao = 'TAP';
 
                   if (_page == 2) {
                     if ((_pageAntiga == 0 && _page == 2) ||
@@ -204,19 +206,22 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 final CurvedNavigationBarState navBarState =
                     _bottomNavigationKey.currentState;
                 if (velocity < 0) {
-                  print('DIREITA PARA ESQUERDA');
                   navBarState.setPage(1);
                 } else {
-                  print('ESQUERDA PARA DIREITA');
                   navBarState.setPage(3);
                 }
+
+                setState(() {
+                  _controleTransicao = 'SLIDE';
+                });
               },
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 home: AlertPage(
-                  page: _page,
-                  pageAntiga: _pageAntiga,
-                ),
+                    page: _page,
+                    pageAntiga: _pageAntiga,
+                    controleTransicao: _controleTransicao,
+                    bottomNavigationKey: _bottomNavigationKey),
               ),
             ),
           ),
@@ -246,16 +251,21 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 final CurvedNavigationBarState navBarState =
                     _bottomNavigationKey.currentState;
                 if (velocity < 0) {
-                  print('DIREITA PARA ESQUERDA');
                   navBarState.setPage(2);
                 } else {
-                  print('ESQUERDA PARA DIREITA');
                   navBarState.setPage(0);
                 }
+
+                setState(() {
+                  _controleTransicao = 'SLIDE';
+                });
               },
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
-                home: PerfilPage(page: _page),
+                home: PerfilPage(
+                  page: _page,
+                  bottomNavigationKey: _bottomNavigationKey,
+                ),
               ),
             ),
           ),
@@ -287,17 +297,20 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   final CurvedNavigationBarState navBarState =
                       _bottomNavigationKey.currentState;
                   if (velocity < 0) {
-                    print('DIREITA PARA ESQUERDA');
                     navBarState.setPage(3);
                   } else {
-                    print('ESQUERDA PARA DIREITA');
                     navBarState.setPage(1);
                   }
+
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
                 },
                 child: BarcodePage(
                   resultBarcode: '$_resultBarcode',
                   inOutScan: '$inOutScan',
                   page: _page,
+                  bottomNavigationKey: _bottomNavigationKey,
                 ),
               ),
             ),
@@ -332,12 +345,18 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 } else {
                   navBarState.setPage(2);
                 }
+
+                setState(() {
+                  _controleTransicao = 'SLIDE';
+                });
               },
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 home: ListaProdutosPage(
                   page: _page,
                   pageAntiga: _pageAntiga,
+                  controleTransicao: _controleTransicao,
+                  bottomNavigationKey: _bottomNavigationKey,
                 ),
               ),
             ),

@@ -1,12 +1,21 @@
 import 'dart:async';
 
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class AlertPage extends StatefulWidget {
   final int page;
   final int pageAntiga;
+  final String controleTransicao;
+  final GlobalKey bottomNavigationKey;
 
-  const AlertPage({Key key, this.page, this.pageAntiga}) : super(key: key);
+  const AlertPage(
+      {Key key,
+      this.page,
+      this.pageAntiga,
+      this.controleTransicao,
+      this.bottomNavigationKey})
+      : super(key: key);
 
   @override
   _AlertPageState createState() => _AlertPageState();
@@ -27,9 +36,11 @@ class _AlertPageState extends State<AlertPage> {
         if (widget.page != oldWidget.page) {
           if (coordX == 0.0) {
             animationDuration = Duration(milliseconds: 0);
-            coordX = widget.pageAntiga == 3
-                ? MediaQuery.of(context).size.width
-                : -MediaQuery.of(context).size.width;
+            coordX = widget.pageAntiga != 3
+                ? -MediaQuery.of(context).size.width
+                : widget.controleTransicao == 'TAP'
+                    ? -MediaQuery.of(context).size.width
+                    : MediaQuery.of(context).size.width;
 
             Timer(Duration(milliseconds: 1), () {
               setState(() => {
@@ -49,13 +60,42 @@ class _AlertPageState extends State<AlertPage> {
 
   @override
   Widget build(BuildContext context) {
+    final CurvedNavigationBarState navBarState =
+        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
       child: Scaffold(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.transparent,
         body: Center(
-          child: Text('ALERTA DE PREÇOS'),
+          child: Flex(
+            direction: Axis.vertical,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 1'),
+                onPressed: () {
+                  navBarState.setPage(1);
+                },
+              ),
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 2'),
+                onPressed: () {
+                  navBarState.setPage(2);
+                },
+              ),
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 3'),
+                onPressed: () {
+                  navBarState.setPage(3);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

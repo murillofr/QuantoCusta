@@ -1,13 +1,20 @@
 import 'dart:async';
 
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
   final String inOutScan;
   final int page;
+  final GlobalKey bottomNavigationKey;
 
-  const BarcodePage({Key key, this.resultBarcode, this.inOutScan, this.page})
+  const BarcodePage(
+      {Key key,
+      this.resultBarcode,
+      this.inOutScan,
+      this.page,
+      this.bottomNavigationKey})
       : super(key: key);
 
   @override
@@ -54,8 +61,7 @@ class _BarcodePageState extends State<BarcodePage> {
           // Verifica se é a primeira vez que o scan está sendo chamado
           if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
             _switchCoverPhoto();
-          } else {
-          }
+          } else {}
         }
       }
     });
@@ -73,6 +79,8 @@ class _BarcodePageState extends State<BarcodePage> {
 
   @override
   Widget build(BuildContext context) {
+    final CurvedNavigationBarState navBarState =
+        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
@@ -129,28 +137,27 @@ class _BarcodePageState extends State<BarcodePage> {
                           direction: Axis.vertical,
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
-                            TextField(
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Enter a search term'),
+                            MaterialButton(
+                              color: Colors.blueAccent,
+                              child: Text('ACESSAR PAGE 0'),
+                              onPressed: () {
+                                navBarState.setPage(0);
+                              },
                             ),
-                            Text('data 1'),
-                            Text('data 2'),
-                            Text('data 3'),
-                            Text('data 4'),
-                            Text('data 5'),
-                            Text('data 6'),
-                            Text('data 7'),
-                            Text('data 8'),
-                            Text('data 9'),
-                            Text('data 10'),
-                            Text('data 11'),
-                            Text('data 12'),
-                            Text('data 13'),
-                            Text('data 14'),
-                            Text('data 15'),
-                            Text('data 16'),
-                            Text('data 17'),
+                            MaterialButton(
+                              color: Colors.blueAccent,
+                              child: Text('ACESSAR PAGE 1'),
+                              onPressed: () {
+                                navBarState.setPage(1);
+                              },
+                            ),
+                            MaterialButton(
+                              color: Colors.blueAccent,
+                              child: Text('ACESSAR PAGE 3'),
+                              onPressed: () {
+                                navBarState.setPage(3);
+                              },
+                            ),
                           ],
                         ),
                       ),

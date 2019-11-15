@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class PerfilPage extends StatefulWidget {
   final int page;
+  final GlobalKey bottomNavigationKey;
 
-  const PerfilPage({Key key, this.page}) : super(key: key);
+  const PerfilPage({Key key, this.page, this.bottomNavigationKey})
+      : super(key: key);
 
   @override
   _PerfilPageState createState() => _PerfilPageState();
@@ -48,13 +51,42 @@ class _PerfilPageState extends State<PerfilPage> {
 
   @override
   Widget build(BuildContext context) {
+    final CurvedNavigationBarState navBarState =
+        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
       child: Scaffold(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Colors.transparent,
         body: Center(
-          child: Text('PERFIL'),
+          child: Flex(
+            direction: Axis.vertical,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 0'),
+                onPressed: () {
+                  navBarState.setPage(0);
+                },
+              ),
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 2'),
+                onPressed: () {
+                  navBarState.setPage(2);
+                },
+              ),
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 3'),
+                onPressed: () {
+                  navBarState.setPage(3);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

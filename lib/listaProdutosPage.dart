@@ -1,12 +1,21 @@
 import 'dart:async';
 
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class ListaProdutosPage extends StatefulWidget {
   final int page;
   final int pageAntiga;
+  final String controleTransicao;
+  final GlobalKey bottomNavigationKey;
 
-  const ListaProdutosPage({Key key, this.page, this.pageAntiga}) : super(key: key);
+  const ListaProdutosPage(
+      {Key key,
+      this.page,
+      this.pageAntiga,
+      this.controleTransicao,
+      this.bottomNavigationKey})
+      : super(key: key);
 
   @override
   _ListaProdutosPageState createState() => _ListaProdutosPageState();
@@ -27,9 +36,11 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         if (widget.page != oldWidget.page) {
           if (coordX == 0.0) {
             animationDuration = Duration(milliseconds: 0);
-            coordX = widget.pageAntiga == 0
-                ? -MediaQuery.of(context).size.width
-                : MediaQuery.of(context).size.width;
+            coordX = widget.pageAntiga != 0
+                ? MediaQuery.of(context).size.width
+                : widget.controleTransicao == 'TAP'
+                    ? MediaQuery.of(context).size.width
+                    : -MediaQuery.of(context).size.width;
 
             Timer(Duration(milliseconds: 1), () {
               setState(() => {
@@ -49,13 +60,42 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
 
   @override
   Widget build(BuildContext context) {
+    final CurvedNavigationBarState navBarState =
+        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
       child: Scaffold(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.transparent,
         body: Center(
-          child: Text('LISTA DE PRODUTOS'),
+          child: Flex(
+            direction: Axis.vertical,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 0'),
+                onPressed: () {
+                  navBarState.setPage(0);
+                },
+              ),
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 1'),
+                onPressed: () {
+                  navBarState.setPage(1);
+                },
+              ),
+              MaterialButton(
+                color: Colors.blueAccent,
+                child: Text('ACESSAR PAGE 2'),
+                onPressed: () {
+                  navBarState.setPage(2);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

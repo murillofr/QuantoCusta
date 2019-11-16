@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quanto_custa/alertPage.dart';
@@ -12,6 +13,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:rect_getter/rect_getter.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 final Duration animationDuration = Duration(milliseconds: 400);
@@ -44,6 +46,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
   Duration animationDurationFloatingButton = Duration(milliseconds: 200);
   DragStartDetails startHorizontalDragDetails;
   DragUpdateDetails updateHorizontalDragDetails;
+  double initial;
+  double distance;
+  double percentage = 0.0;
 
   void _portraitModeOnly() {
     SystemChrome.setPreferredOrientations([
@@ -54,6 +59,13 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.black,
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
     _portraitModeOnly();
     return Stack(
       children: <Widget>[
@@ -185,43 +197,39 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 0,
           child: TickerMode(
             enabled: _page == 0,
-            child: GestureDetector(
-              onHorizontalDragStart: (dragDetails) {
-                startHorizontalDragDetails = dragDetails;
-              },
-              onHorizontalDragUpdate: (dragDetails) {
-                updateHorizontalDragDetails = dragDetails;
-              },
-              onHorizontalDragEnd: (endDetails) {
-                double dx = updateHorizontalDragDetails.globalPosition.dx -
-                    startHorizontalDragDetails.globalPosition.dx;
-                double dy = updateHorizontalDragDetails.globalPosition.dy -
-                    startHorizontalDragDetails.globalPosition.dy;
-                double velocity = endDetails.primaryVelocity;
-
-                //Convert values to be positive
-                if (dx < 0) dx = -dx;
-                if (dy < 0) dy = -dy;
-
-                final CurvedNavigationBarState navBarState =
-                    _bottomNavigationKey.currentState;
-                if (velocity < 0) {
+            child: OnlyOnePointerRecognizerWidget(
+              child: SwipeDetector(
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  home: AlertPage(
+                      page: _page,
+                      pageAntiga: _pageAntiga,
+                      controleTransicao: _controleTransicao,
+                      bottomNavigationKey: _bottomNavigationKey),
+                ),
+                onSwipeLeft: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
                   navBarState.setPage(1);
-                } else {
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                onSwipeRight: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
                   navBarState.setPage(3);
-                }
-
-                setState(() {
-                  _controleTransicao = 'SLIDE';
-                });
-              },
-              child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                home: AlertPage(
-                    page: _page,
-                    pageAntiga: _pageAntiga,
-                    controleTransicao: _controleTransicao,
-                    bottomNavigationKey: _bottomNavigationKey),
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                swipeConfiguration: SwipeConfiguration(
+                    verticalSwipeMinVelocity: 300.0,
+                    verticalSwipeMinDisplacement: 100.0,
+                    verticalSwipeMaxWidthThreshold: 50.0,
+                    horizontalSwipeMaxHeightThreshold: 50.0,
+                    horizontalSwipeMinDisplacement: 30.0,
+                    horizontalSwipeMinVelocity: 50.0),
               ),
             ),
           ),
@@ -230,42 +238,38 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 1,
           child: TickerMode(
             enabled: _page == 1,
-            child: GestureDetector(
-              onHorizontalDragStart: (dragDetails) {
-                startHorizontalDragDetails = dragDetails;
-              },
-              onHorizontalDragUpdate: (dragDetails) {
-                updateHorizontalDragDetails = dragDetails;
-              },
-              onHorizontalDragEnd: (endDetails) {
-                double dx = updateHorizontalDragDetails.globalPosition.dx -
-                    startHorizontalDragDetails.globalPosition.dx;
-                double dy = updateHorizontalDragDetails.globalPosition.dy -
-                    startHorizontalDragDetails.globalPosition.dy;
-                double velocity = endDetails.primaryVelocity;
-
-                //Convert values to be positive
-                if (dx < 0) dx = -dx;
-                if (dy < 0) dy = -dy;
-
-                final CurvedNavigationBarState navBarState =
-                    _bottomNavigationKey.currentState;
-                if (velocity < 0) {
-                  navBarState.setPage(2);
-                } else {
-                  navBarState.setPage(0);
-                }
-
-                setState(() {
-                  _controleTransicao = 'SLIDE';
-                });
-              },
-              child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                home: PerfilPage(
-                  page: _page,
-                  bottomNavigationKey: _bottomNavigationKey,
+            child: OnlyOnePointerRecognizerWidget(
+              child: SwipeDetector(
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  home: PerfilPage(
+                    page: _page,
+                    bottomNavigationKey: _bottomNavigationKey,
+                  ),
                 ),
+                onSwipeLeft: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
+                  navBarState.setPage(2);
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                onSwipeRight: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
+                  navBarState.setPage(0);
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                swipeConfiguration: SwipeConfiguration(
+                    verticalSwipeMinVelocity: 300.0,
+                    verticalSwipeMinDisplacement: 100.0,
+                    verticalSwipeMaxWidthThreshold: 50.0,
+                    horizontalSwipeMaxHeightThreshold: 50.0,
+                    horizontalSwipeMinDisplacement: 30.0,
+                    horizontalSwipeMinVelocity: 50.0),
               ),
             ),
           ),
@@ -274,44 +278,40 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 2,
           child: TickerMode(
             enabled: _page == 2,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: GestureDetector(
-                onHorizontalDragStart: (dragDetails) {
-                  startHorizontalDragDetails = dragDetails;
-                },
-                onHorizontalDragUpdate: (dragDetails) {
-                  updateHorizontalDragDetails = dragDetails;
-                },
-                onHorizontalDragEnd: (endDetails) {
-                  double dx = updateHorizontalDragDetails.globalPosition.dx -
-                      startHorizontalDragDetails.globalPosition.dx;
-                  double dy = updateHorizontalDragDetails.globalPosition.dy -
-                      startHorizontalDragDetails.globalPosition.dy;
-                  double velocity = endDetails.primaryVelocity;
-
-                  //Convert values to be positive
-                  if (dx < 0) dx = -dx;
-                  if (dy < 0) dy = -dy;
-
+            child: OnlyOnePointerRecognizerWidget(
+              child: SwipeDetector(
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  home: BarcodePage(
+                    resultBarcode: '$_resultBarcode',
+                    inOutScan: '$inOutScan',
+                    page: _page,
+                    bottomNavigationKey: _bottomNavigationKey,
+                  ),
+                ),
+                onSwipeLeft: () {
                   final CurvedNavigationBarState navBarState =
                       _bottomNavigationKey.currentState;
-                  if (velocity < 0) {
-                    navBarState.setPage(3);
-                  } else {
-                    navBarState.setPage(1);
-                  }
-
+                  navBarState.setPage(3);
                   setState(() {
                     _controleTransicao = 'SLIDE';
                   });
                 },
-                child: BarcodePage(
-                  resultBarcode: '$_resultBarcode',
-                  inOutScan: '$inOutScan',
-                  page: _page,
-                  bottomNavigationKey: _bottomNavigationKey,
-                ),
+                onSwipeRight: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
+                  navBarState.setPage(1);
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                swipeConfiguration: SwipeConfiguration(
+                    verticalSwipeMinVelocity: 300.0,
+                    verticalSwipeMinDisplacement: 100.0,
+                    verticalSwipeMaxWidthThreshold: 50.0,
+                    horizontalSwipeMaxHeightThreshold: 50.0,
+                    horizontalSwipeMinDisplacement: 30.0,
+                    horizontalSwipeMinVelocity: 50.0),
               ),
             ),
           ),
@@ -320,44 +320,40 @@ class _HomePageState extends State<HomePage> with RouteAware {
           offstage: _page != 3,
           child: TickerMode(
             enabled: _page == 3,
-            child: GestureDetector(
-              onHorizontalDragStart: (dragDetails) {
-                startHorizontalDragDetails = dragDetails;
-              },
-              onHorizontalDragUpdate: (dragDetails) {
-                updateHorizontalDragDetails = dragDetails;
-              },
-              onHorizontalDragEnd: (endDetails) {
-                double dx = updateHorizontalDragDetails.globalPosition.dx -
-                    startHorizontalDragDetails.globalPosition.dx;
-                double dy = updateHorizontalDragDetails.globalPosition.dy -
-                    startHorizontalDragDetails.globalPosition.dy;
-                double velocity = endDetails.primaryVelocity;
-
-                //Convert values to be positive
-                if (dx < 0) dx = -dx;
-                if (dy < 0) dy = -dy;
-
-                final CurvedNavigationBarState navBarState =
-                    _bottomNavigationKey.currentState;
-                if (velocity < 0) {
-                  navBarState.setPage(0);
-                } else {
-                  navBarState.setPage(2);
-                }
-
-                setState(() {
-                  _controleTransicao = 'SLIDE';
-                });
-              },
-              child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                home: ListaProdutosPage(
-                  page: _page,
-                  pageAntiga: _pageAntiga,
-                  controleTransicao: _controleTransicao,
-                  bottomNavigationKey: _bottomNavigationKey,
+            child: OnlyOnePointerRecognizerWidget(
+              child: SwipeDetector(
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  home: ListaProdutosPage(
+                    page: _page,
+                    pageAntiga: _pageAntiga,
+                    controleTransicao: _controleTransicao,
+                    bottomNavigationKey: _bottomNavigationKey,
+                  ),
                 ),
+                onSwipeLeft: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
+                  navBarState.setPage(0);
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                onSwipeRight: () {
+                  final CurvedNavigationBarState navBarState =
+                      _bottomNavigationKey.currentState;
+                  navBarState.setPage(2);
+                  setState(() {
+                    _controleTransicao = 'SLIDE';
+                  });
+                },
+                swipeConfiguration: SwipeConfiguration(
+                    verticalSwipeMinVelocity: 300.0,
+                    verticalSwipeMinDisplacement: 100.0,
+                    verticalSwipeMaxWidthThreshold: 50.0,
+                    horizontalSwipeMaxHeightThreshold: 50.0,
+                    horizontalSwipeMinDisplacement: 30.0,
+                    horizontalSwipeMinVelocity: 50.0),
               ),
             ),
           ),
@@ -447,4 +443,49 @@ class FadeRouteBuilder<T> extends PageRouteBuilder<T> {
             return FadeTransition(opacity: animation1, child: child);
           },
         );
+}
+
+class OnlyOnePointerRecognizer extends OneSequenceGestureRecognizer {
+  int _p = 0;
+  @override
+  void addPointer(PointerDownEvent event) {
+    startTrackingPointer(event.pointer);
+    if (_p == 0) {
+      resolve(GestureDisposition.rejected);
+      _p = event.pointer;
+    } else {
+      resolve(GestureDisposition.accepted);
+    }
+  }
+
+  @override
+  String get debugDescription => 'only one pointer recognizer';
+
+  @override
+  void didStopTrackingLastPointer(int pointer) {}
+
+  @override
+  void handleEvent(PointerEvent event) {
+    if (!event.down && event.pointer == _p) {
+      _p = 0;
+    }
+  }
+}
+
+class OnlyOnePointerRecognizerWidget extends StatelessWidget {
+  final Widget child;
+  OnlyOnePointerRecognizerWidget({this.child});
+  @override
+  Widget build(BuildContext context) {
+    return RawGestureDetector(
+      gestures: <Type, GestureRecognizerFactory>{
+        OnlyOnePointerRecognizer:
+            GestureRecognizerFactoryWithHandlers<OnlyOnePointerRecognizer>(
+          () => OnlyOnePointerRecognizer(),
+          (OnlyOnePointerRecognizer instance) {},
+        ),
+      },
+      child: child,
+    );
+  }
 }

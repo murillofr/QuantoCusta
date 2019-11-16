@@ -22,9 +22,9 @@ class BarcodePage extends StatefulWidget {
 }
 
 const List<String> _photoData = const [
-  "assets/bing.png",
-  "assets/google.png",
-  "assets/youtube.jpg",
+  "assets/cajuba.png",
+  "assets/omo.png",
+  "assets/qualy.png",
 ];
 
 class _BarcodePageState extends State<BarcodePage> {
@@ -86,113 +86,181 @@ class _BarcodePageState extends State<BarcodePage> {
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: ListView(
-          padding: EdgeInsets.all(0.0),
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(
-                  alignment: Alignment.center,
-                  child: Flex(
-                    direction: Axis.vertical,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        body: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: viewportConstraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
                     children: <Widget>[
-                      Row(
-                        children: [
-                          Expanded(
+                      Stack(
+                        children: <Widget>[
+                          Container(
+                            // A fixed-height child.
+                            color: const Color(0xff808000), // Yellow
+                            height: 200.0,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.fromLTRB(
+                                        30.0, 19.0, 30.0, 41.0),
+                                    height: 200,
+                                    color: Colors.white,
+                                    child: Flex(
+                                      direction: Axis.horizontal,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Visibility(
+                                          visible: widget.resultBarcode == '',
+                                          child: Container(
+                                            child: Text('LOGO DO APP'),
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible: widget.resultBarcode != '',
+                                          child: Flexible(
+                                            child: Image(
+                                              image: AssetImage(
+                                                  _photoData[_coverPhoto]),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Center(
                             child: Container(
-                              padding: EdgeInsets.all(10.0),
-                              height: 200,
-                              color: Colors.white,
-                              child: Flex(
-                                direction: Axis.horizontal,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Visibility(
-                                    visible: widget.resultBarcode == '',
-                                    child: Container(
-                                      child: Text('LOGO DO APP'),
-                                    ),
+                              width: widget.resultBarcode == '' ? 0 : null,
+                              margin: EdgeInsets.only(top: 178.0),
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                    8.0, 5.0, 8.0, 5.0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.yellow[200],
+                                    width: 5.0,
                                   ),
-                                  Visibility(
-                                    visible: widget.resultBarcode != '',
-                                    child: Flexible(
-                                      child: Image(
-                                        image:
-                                            AssetImage(_photoData[_coverPhoto]),
-                                      ),
-                                    ),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(30.0),
                                   ),
-                                ],
+                                  color: Colors.yellow[200],
+                                ),
+                                child: Text(
+                                  widget.resultBarcode,
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 0.0),
-                        child: Flex(
-                          direction: Axis.vertical,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            MaterialButton(
-                              color: Colors.blueAccent,
-                              child: Text('ACESSAR PAGE 0'),
-                              onPressed: () {
-                                navBarState.setPage(0);
-                              },
+                      Expanded(
+                        // A flexible child that will grow to fit the viewport but
+                        // still be at least as big as necessary to fit its contents.
+                        child: Container(
+                          color: const Color(0xff800000), // Red
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                            child: Flex(
+                              direction: Axis.vertical,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 0'),
+                                  onPressed: () {
+                                    navBarState.setPage(0);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 1'),
+                                  onPressed: () {
+                                    navBarState.setPage(1);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                                MaterialButton(
+                                  color: Colors.blueAccent,
+                                  child: Text('ACESSAR PAGE 3'),
+                                  onPressed: () {
+                                    navBarState.setPage(3);
+                                  },
+                                ),
+                              ],
                             ),
-                            MaterialButton(
-                              color: Colors.blueAccent,
-                              child: Text('ACESSAR PAGE 1'),
-                              onPressed: () {
-                                navBarState.setPage(1);
-                              },
-                            ),
-                            MaterialButton(
-                              color: Colors.blueAccent,
-                              child: Text('ACESSAR PAGE 3'),
-                              onPressed: () {
-                                navBarState.setPage(3);
-                              },
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Center(
-                  child: Container(
-                    width: widget.resultBarcode == '' ? 0 : null,
-                    margin: EdgeInsets.only(top: 178.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(5.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.yellow[200],
-                          width: 5.0,
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30.0),
-                        ),
-                        color: Colors.yellow[200],
-                      ),
-                      child: Text(
-                        widget.resultBarcode,
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            );
+          },
         ),
       ),
     );

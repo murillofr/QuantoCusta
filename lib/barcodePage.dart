@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+//import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
@@ -21,22 +22,43 @@ class BarcodePage extends StatefulWidget {
   _BarcodePageState createState() => _BarcodePageState();
 }
 
-const List<String> _photoData = const [
-  "assets/cajuba.png",
-  "assets/omo.png",
-  "assets/qualy.png",
+List<Map<String, String>> jsonProdutos = [
+  {
+    "barcode": "7891321063293",
+    "nome": "Café Cajubá",
+    "unidadeMedida": "g",
+    "quantidade": "500",
+    "valor": "6,90",
+    "imagem": "assets/cajuba.png",
+  },
+  {
+    "barcode": "7891360623090",
+    "nome": "Margarina Qualy",
+    "unidadeMedida": "g",
+    "quantidade": "500",
+    "valor": "5,50",
+    "imagem": "assets/qualy.png",
+  },
+  {
+    "barcode": "7897629207452",
+    "nome": "Sabão em pó Omo Multiação",
+    "unidadeMedida": "kg",
+    "quantidade": "1",
+    "valor": "10,45",
+    "imagem": "assets/omo.png",
+  },
 ];
 
 class _BarcodePageState extends State<BarcodePage> {
   double coordX = 0.0;
   Duration animationDuration = Duration(milliseconds: 200);
+  Map<String, String> produto;
+  DateTime now = DateTime.now();
 
   @override
   void initState() {
     super.initState();
   }
-
-  int _coverPhoto = 0;
 
   void didUpdateWidget(BarcodePage oldWidget) {
     setState(() {
@@ -60,27 +82,33 @@ class _BarcodePageState extends State<BarcodePage> {
         } else {
           // Verifica se é a primeira vez que o scan está sendo chamado
           if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
-            _switchCoverPhoto();
-          } else {}
+            _getProduto();
+            now = DateTime.now();
+          }
         }
       }
     });
     super.didUpdateWidget(oldWidget);
   }
 
-  void _switchCoverPhoto() {
-    setState(() {
-      _coverPhoto++;
-      if (_coverPhoto == _photoData.length) {
-        _coverPhoto = 0;
+  void _getProduto() {
+    for (var i = 0; i < jsonProdutos.length; i++) {
+      if (jsonProdutos[i]['barcode'] == widget.resultBarcode) {
+        setState(() {
+          produto = jsonProdutos[i];
+        });
+        break;
+      } else {
+        setState(() {
+          produto = {};
+        });
       }
-    });
+    }
+    print(produto);
   }
 
   @override
   Widget build(BuildContext context) {
-    final CurvedNavigationBarState navBarState =
-        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
@@ -98,160 +126,18 @@ class _BarcodePageState extends State<BarcodePage> {
                     children: <Widget>[
                       Stack(
                         children: <Widget>[
-                          Container(
-                            // A fixed-height child.
-                            color: const Color(0xff808000), // Yellow
-                            height: 200.0,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.fromLTRB(
-                                        30.0, 19.0, 30.0, 41.0),
-                                    height: 200,
-                                    color: Colors.white,
-                                    child: Flex(
-                                      direction: Axis.horizontal,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Visibility(
-                                          visible: widget.resultBarcode == '',
-                                          child: Container(
-                                            child: Text('LOGO DO APP'),
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible: widget.resultBarcode != '',
-                                          child: Flexible(
-                                            child: Image(
-                                              image: AssetImage(
-                                                  _photoData[_coverPhoto]),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                              width: widget.resultBarcode == '' ? 0 : null,
-                              margin: EdgeInsets.only(top: 178.0),
-                              child: Container(
-                                padding: const EdgeInsets.fromLTRB(
-                                    8.0, 5.0, 8.0, 5.0),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.yellow[200],
-                                    width: 5.0,
-                                  ),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(30.0),
-                                  ),
-                                  color: Colors.yellow[200],
-                                ),
-                                child: Text(
-                                  widget.resultBarcode,
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          buildImagemProduto(),
+                          buildBarcodeProduto(),
+                          buildDataHoraPesquisa(
+                              DateFormat("dd/MM/yyyy").format(now),
+                              DateFormat("HH:mm:ss").format(now)),
                         ],
                       ),
                       Expanded(
-                        // A flexible child that will grow to fit the viewport but
-                        // still be at least as big as necessary to fit its contents.
                         child: Container(
-                          color: const Color(0xff800000), // Red
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                            child: Flex(
-                              direction: Axis.vertical,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 0'),
-                                  onPressed: () {
-                                    navBarState.setPage(0);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 1'),
-                                  onPressed: () {
-                                    navBarState.setPage(1);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                                MaterialButton(
-                                  color: Colors.blueAccent,
-                                  child: Text('ACESSAR PAGE 3'),
-                                  onPressed: () {
-                                    navBarState.setPage(3);
-                                  },
-                                ),
-                              ],
-                            ),
+                            child: buildInfosProduto(),
                           ),
                         ),
                       ),
@@ -263,6 +149,161 @@ class _BarcodePageState extends State<BarcodePage> {
           },
         ),
       ),
+    );
+  }
+
+  Widget buildImagemProduto() {
+    return Container(
+      color: const Color(0xff808000),
+      height: 200.0,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(30.0, 19.0, 30.0, 41.0),
+              height: 200,
+              color: Colors.white,
+              child: Flex(
+                direction: Axis.horizontal,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Flexible(
+                    child: widget.resultBarcode == ''
+                        ? Container(
+                            padding: EdgeInsets.only(top: 22.0),
+                            child: Text('LOGO DO APP'),
+                          )
+                        : produto.length > 0
+                            ? Image(
+                                image: AssetImage(
+                                  produto["imagem"],
+                                ),
+                              )
+                            : Container(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(Icons.error_outline, size: 100.0),
+                                    Text(
+                                      'PRODUTO NÃO LOCALIZADO',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBarcodeProduto() {
+    return Center(
+      child: Container(
+        width: widget.resultBarcode == '' ? 0 : null,
+        margin: EdgeInsets.only(top: 178.0),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(8.0, 5.0, 8.0, 5.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.yellow[200],
+              width: 5.0,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(30.0),
+            ),
+            color: Colors.yellow[200],
+          ),
+          child: Text(
+            widget.resultBarcode,
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDataHoraPesquisa(String data, String hora) {
+    return Visibility(
+      visible: widget.resultBarcode != '',
+      child: Container(
+        margin: EdgeInsets.only(top: 178.0),
+        child: Container(
+          padding: const EdgeInsets.all(5.0),
+          child: Stack(
+            children: <Widget>[
+              Text(
+                data,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  hora,
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildInfosProduto() {
+    return Flex(
+      direction: Axis.vertical,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Flexible(
+          child: widget.resultBarcode == ''
+              ? Container()
+              : produto.length > 0
+                  ? Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start, //.center
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            produto["nome"],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22.0,
+                            ),
+                          ),
+                          Text(
+                            produto["quantidade"] + produto["unidadeMedida"],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(),
+        ),
+      ],
     );
   }
 }

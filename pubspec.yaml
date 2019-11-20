@@ -29,6 +29,7 @@ dependencies:
   flutter_barcode_scanner: ^0.1.7
   rect_getter: ^0.0.1
   swipedetector: ^1.2.0
+  intl: ^0.16.0
 
 dev_dependencies:
   flutter_test:

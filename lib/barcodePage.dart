@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:quanto_custa/NavCustomPainter.dart';
 //import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class BarcodePage extends StatefulWidget {
@@ -41,10 +42,10 @@ List<Map<String, String>> jsonProdutos = [
   },
   {
     "barcode": "7897629207452",
-    "nome": "Sabão em pó Omo Multiação",
+    "nome": "Sabão em pó Omo sdfsdfsdfsdMultiação",
     "unidadeMedida": "kg",
     "quantidade": "1",
-    "valor": "10,45",
+    "valor": "888,88",
     "imagem": "assets/omo.png",
   },
 ];
@@ -155,13 +156,15 @@ class _BarcodePageState extends State<BarcodePage> {
   Widget buildImagemProduto() {
     return Container(
       color: const Color(0xff808000),
-      height: 200.0,
+      height: widget.resultBarcode == ''
+          ? MediaQuery.of(context).size.height - 150
+          : 200.0,
       child: Row(
         children: [
           Expanded(
             child: Container(
               padding: EdgeInsets.fromLTRB(30.0, 19.0, 30.0, 41.0),
-              height: 200,
+              height: MediaQuery.of(context).size.height,
               color: Colors.white,
               child: Flex(
                 direction: Axis.horizontal,
@@ -213,13 +216,13 @@ class _BarcodePageState extends State<BarcodePage> {
           padding: const EdgeInsets.fromLTRB(8.0, 5.0, 8.0, 5.0),
           decoration: BoxDecoration(
             border: Border.all(
-              color: Colors.yellow[200],
+              color: Colors.blueAccent[100],
               width: 5.0,
             ),
             borderRadius: BorderRadius.all(
               Radius.circular(30.0),
             ),
-            color: Colors.yellow[200],
+            color: Colors.blueAccent[100],
           ),
           child: Text(
             widget.resultBarcode,
@@ -277,33 +280,224 @@ class _BarcodePageState extends State<BarcodePage> {
               ? Container()
               : produto.length > 0
                   ? Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start, //.center
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            produto["nome"],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22.0,
-                            ),
-                          ),
-                          Text(
-                            produto["quantidade"] + produto["unidadeMedida"],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.0,
-                            ),
-                          ),
-                        ],
-                      ),
+                          mainAxisAlignment: MainAxisAlignment.start, //.center
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: true
+                              ? <Widget>[
+                                  buildNomeProduto(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      SizedBox(
+                                        height: 120.0,
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          child: Center(
+                                            child: buildPrecoProduto(),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          child: Center(
+                                            child: buildPrecoProduto(),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          color: Colors.green,
+                                          child: Center(
+                                            child: Text('direita'),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ]
+                              : <Widget>[
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 1'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 2'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                  MaterialButton(
+                                    color: Colors.blueAccent,
+                                    child: Text('ACESSAR PAGE 3'),
+                                    onPressed: () {},
+                                  ),
+                                ]),
                     )
                   : Container(),
         ),
       ],
     );
   }
+
+  Widget buildNomeProduto() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Stack(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: 20.0),
+              color: Colors.blueAccent[100],
+              child: CustomPaint(
+                painter: NavCustomPainter(
+                    0.12, 100, Colors.yellow[200], Directionality.of(context)),
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          produto["nome"],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0,
+                          ),
+                        ),
+                        Text(
+                          produto["quantidade"] + produto["unidadeMedida"],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 17.0,
+              child: Material(
+                color: Colors.yellow[200],
+                type: MaterialType.circle,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Icon(Icons.error_outline, size: 30.0),
+                ),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildPrecoProduto() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Stack(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 20.0, 3.0, 0),
+              color: Colors.blueAccent[100],
+              child: CustomPaint(
+                painter: NavCustomPainter(
+                    0.12, 100, Colors.yellow[200], Directionality.of(context)),
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Preço',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                        Text(
+                          'R\$ ' + produto["valor"],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 19.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 17.0,
+              child: Material(
+                color: Colors.yellow[200],
+                type: MaterialType.circle,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Icon(Icons.monetization_on, size: 30.0),
+                ),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
 }

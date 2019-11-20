@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
       children: <Widget>[
         Scaffold(
           body: Container(
-            color: Colors.yellow[200],
+            color: Colors.blueAccent[100],
             child: SafeArea(
               child: Container(
                 margin: _page == 0
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             height: 60.0,
             color: Colors.blueAccent,
             buttonBackgroundColor: Colors.blueAccent,
-            backgroundColor: Colors.yellow[200],
+            backgroundColor: Colors.blueAccent[100],
             animationCurve: Curves.decelerate,
             animationDuration: Duration(milliseconds: 300),
             items: <Widget>[

@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     : _page == 1
                         ? const EdgeInsets.only(bottom: 16.0)
                         : _page == 2
-                            ? EdgeInsets.only(bottom: 66.0)
+                            ? const EdgeInsets.only(bottom: 66.0)
                             : const EdgeInsets.only(bottom: 16.0),
                 child: _switcherBody(),
               ),

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:quanto_custa/NavCustomPainter.dart';
-//import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:quanto_custa/navCustomPainter.dart';
+import 'package:community_material_icon/community_material_icon.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
@@ -29,7 +29,7 @@ List<Map<String, String>> jsonProdutos = [
     "nome": "Café Cajubá",
     "unidadeMedida": "g",
     "quantidade": "500",
-    "valor": "6,90",
+    "valor": "6,95",
     "imagem": "assets/cajuba.png",
   },
   {
@@ -42,10 +42,10 @@ List<Map<String, String>> jsonProdutos = [
   },
   {
     "barcode": "7897629207452",
-    "nome": "Sabão em pó Omo sdfsdfsdfsdMultiação",
+    "nome": "Sabão em pó Omo Multiação",
     "unidadeMedida": "kg",
     "quantidade": "1",
-    "valor": "888,88",
+    "valor": "8888,40",
     "imagem": "assets/omo.png",
   },
 ];
@@ -55,6 +55,12 @@ class _BarcodePageState extends State<BarcodePage> {
   Duration animationDuration = Duration(milliseconds: 200);
   Map<String, String> produto;
   DateTime now = DateTime.now();
+  double valorTotalProduto;
+  NumberFormat formatPreco = NumberFormat("#.00", "pt");
+  bool addProdutoLista = false;
+  bool okProdutoLista = false;
+  bool botaoAddProdutoAtivado = true;
+  int qtdProduto = 1;
 
   @override
   void initState() {
@@ -97,6 +103,8 @@ class _BarcodePageState extends State<BarcodePage> {
       if (jsonProdutos[i]['barcode'] == widget.resultBarcode) {
         setState(() {
           produto = jsonProdutos[i];
+          valorTotalProduto =
+              double.parse(produto["valor"].replaceAll(',', '.'));
         });
         break;
       } else {
@@ -165,7 +173,9 @@ class _BarcodePageState extends State<BarcodePage> {
             child: Container(
               padding: EdgeInsets.fromLTRB(30.0, 19.0, 30.0, 41.0),
               height: MediaQuery.of(context).size.height,
-              color: Colors.white,
+              color: widget.resultBarcode == ''
+                  ? Colors.blueAccent[100]
+                  : Colors.white,
               child: Flex(
                 direction: Axis.horizontal,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -213,11 +223,11 @@ class _BarcodePageState extends State<BarcodePage> {
         width: widget.resultBarcode == '' ? 0 : null,
         margin: EdgeInsets.only(top: 178.0),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(8.0, 5.0, 8.0, 5.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 5.0),
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.blueAccent[100],
-              width: 5.0,
+              width: 4.0,
             ),
             borderRadius: BorderRadius.all(
               Radius.circular(30.0),
@@ -227,7 +237,7 @@ class _BarcodePageState extends State<BarcodePage> {
           child: Text(
             widget.resultBarcode,
             style: TextStyle(
-              fontSize: 18.0,
+              fontSize: 16.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -280,46 +290,20 @@ class _BarcodePageState extends State<BarcodePage> {
               ? Container()
               : produto.length > 0
                   ? Container(
-                      padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                      padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 5.0),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start, //.center
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: true
                               ? <Widget>[
                                   buildNomeProduto(),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Stack(
                                     children: <Widget>[
-                                      SizedBox(
-                                        height: 120.0,
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                          child: Center(
-                                            child: buildPrecoProduto(),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                          child: Center(
-                                            child: buildPrecoProduto(),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                          color: Colors.green,
-                                          child: Center(
-                                            child: Text('direita'),
-                                          ),
-                                        ),
-                                      ),
+                                      buildPrecoProduto(),
+                                      buildBottaoAddProduto(),
                                     ],
                                   ),
                                 ]
@@ -396,7 +380,7 @@ class _BarcodePageState extends State<BarcodePage> {
                     0.12, 100, Colors.yellow[200], Directionality.of(context)),
                 child: Center(
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
+                    padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -406,7 +390,7 @@ class _BarcodePageState extends State<BarcodePage> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22.0,
+                            fontSize: 20.0,
                           ),
                         ),
                         Text(
@@ -414,7 +398,7 @@ class _BarcodePageState extends State<BarcodePage> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 15.0,
+                            fontSize: 13.0,
                           ),
                         ),
                       ],
@@ -448,37 +432,114 @@ class _BarcodePageState extends State<BarcodePage> {
         Stack(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.fromLTRB(0, 20.0, 3.0, 0),
+              margin: EdgeInsets.only(top: 20.0),
               color: Colors.blueAccent[100],
               child: CustomPaint(
                 painter: NavCustomPainter(
                     0.12, 100, Colors.yellow[200], Directionality.of(context)),
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'Preço',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 4,
+                      child: Container(
+                        height: 73.0,
+                        child: Center(
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'Preço - R\$',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                  ),
+                                ),
+                                FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  child: Text(
+                                    produto["valor"],
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 19.0),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Text(
-                          'R\$ ' + produto["valor"],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 19.0,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      flex: 6,
+                      child: Container(
+                        padding: EdgeInsets.only(left: 3.5),
+                        //color: Colors.green,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: RawMaterialButton(
+                                onPressed: () {
+                                  if (qtdProduto > 1) {
+                                    setState(() {
+                                      qtdProduto--;
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.remove,
+                                  color: Colors.yellow[200],
+                                  size: 30.0,
+                                ),
+                                shape: CircleBorder(),
+                                elevation: 0,
+                                fillColor: Colors.black,
+                                padding: const EdgeInsets.all(5.0),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: Text(qtdProduto.toString()),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: RawMaterialButton(
+                                onPressed: () {
+                                  if (qtdProduto < 99) {
+                                    setState(() {
+                                      qtdProduto++;
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.yellow[200],
+                                  size: 30.0,
+                                ),
+                                shape: CircleBorder(),
+                                elevation: 0,
+                                fillColor: Colors.black,
+                                padding: const EdgeInsets.all(5.0),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 6,
+                      child: Container(),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -500,4 +561,90 @@ class _BarcodePageState extends State<BarcodePage> {
     );
   }
 
+  Widget buildBottaoAddProduto() {
+    return Positioned(
+      right: -35.0,
+      bottom: 0,
+      top: 20,
+      child: FlatButton(
+          color: Colors.redAccent,
+          disabledColor: Colors.redAccent,
+          disabledTextColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40.0),
+          ),
+          child: Container(
+            height: 73.0,
+            width: 131.0,
+            child: Stack(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: 71.0,
+                      padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Total - R\$',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15.0,
+                            ),
+                          ),
+                          FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: Text(
+                              formatPreco.format(valorTotalProduto),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 19.0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                AnimatedPositionedDirectional(
+                  top: 0,
+                  bottom: 0,
+                  end: addProdutoLista ? -125.0 : 25.0,
+                  curve: Curves.linear,
+                  duration: Duration(milliseconds: 300),
+                  child: Icon(
+                    okProdutoLista
+                        ? CommunityMaterialIcons.clipboard_check_outline
+                        : CommunityMaterialIcons.clipboard_arrow_right_outline,
+                    size: 30.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          onPressed: botaoAddProdutoAtivado
+              ? () {
+                  setState(() {
+                    botaoAddProdutoAtivado = false;
+                    addProdutoLista = true;
+                  });
+                  Timer(Duration(milliseconds: 400), () {
+                    setState(() {
+                      okProdutoLista = true;
+                      addProdutoLista = false;
+                    });
+                  });
+                  Timer(Duration(milliseconds: 1200), () {
+                    setState(() {
+                      okProdutoLista = false;
+                      botaoAddProdutoAtivado = true;
+                    });
+                  });
+                }
+              : null),
+    );
+  }
 }

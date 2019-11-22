@@ -177,7 +177,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 child: RectGetter(
                   key: rectGetterKey,
                   child: FloatingActionButton.extended(
-                    label: Text('ESCANEAR CÓDIGO DE BARRAS'),
+                    label: Text('LER CÓDIGO DE BARRAS'),
                     onPressed: _onTapScan,
                     elevation: 0,
                     backgroundColor: Colors.black,

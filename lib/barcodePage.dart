@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:quanto_custa/navCustomPainter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
@@ -42,7 +44,8 @@ List<Map<String, String>> jsonProdutos = [
   },
   {
     "barcode": "7897629207452",
-    "nome": "Sabão em pó Omo Multiação",
+    "nome":
+        "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||",
     "unidadeMedida": "kg",
     "quantidade": "1",
     "valor": "8888,40",
@@ -103,6 +106,7 @@ class _BarcodePageState extends State<BarcodePage> {
       if (jsonProdutos[i]['barcode'] == widget.resultBarcode) {
         setState(() {
           produto = jsonProdutos[i];
+          qtdProduto = 1;
           valorTotalProduto =
               double.parse(produto["valor"].replaceAll(',', '.'));
         });
@@ -166,7 +170,7 @@ class _BarcodePageState extends State<BarcodePage> {
       color: const Color(0xff808000),
       height: widget.resultBarcode == ''
           ? MediaQuery.of(context).size.height - 150
-          : 200.0,
+          : 181.0,
       child: Row(
         children: [
           Expanded(
@@ -221,7 +225,7 @@ class _BarcodePageState extends State<BarcodePage> {
     return Center(
       child: Container(
         width: widget.resultBarcode == '' ? 0 : null,
-        margin: EdgeInsets.only(top: 178.0),
+        margin: EdgeInsets.only(top: 159.0),
         child: Container(
           padding: const EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 5.0),
           decoration: BoxDecoration(
@@ -250,7 +254,7 @@ class _BarcodePageState extends State<BarcodePage> {
     return Visibility(
       visible: widget.resultBarcode != '',
       child: Container(
-        margin: EdgeInsets.only(top: 178.0),
+        margin: EdgeInsets.only(top: 160.0),
         child: Container(
           padding: const EdgeInsets.all(5.0),
           child: Stack(
@@ -292,74 +296,33 @@ class _BarcodePageState extends State<BarcodePage> {
                   ? Container(
                       padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 5.0),
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start, //.center
+                          mainAxisAlignment: MainAxisAlignment.center, //.center
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: true
-                              ? <Widget>[
-                                  buildNomeProduto(),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  Stack(
-                                    children: <Widget>[
-                                      buildPrecoProduto(),
-                                      buildBottaoAddProduto(),
-                                    ],
-                                  ),
-                                ]
-                              : <Widget>[
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 1'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 2'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                  MaterialButton(
-                                    color: Colors.blueAccent,
-                                    child: Text('ACESSAR PAGE 3'),
-                                    onPressed: () {},
-                                  ),
-                                ]),
-                    )
+                          children: <Widget>[
+                            buildNomeProduto(),
+                            SizedBox(height: 10.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 3,
+                                  child: buildPrecoProduto(),
+                                ),
+                                SizedBox(width: 10.0),
+                                Expanded(
+                                  flex: 4,
+                                  child: buildQtdBotaoAdd(),
+                                ),
+                              ],
+                            ),
+                            /*Stack(
+                              children: <Widget>[
+                                buildPrecoProduto2(),
+                                buildBottaoAddProduto(),
+                              ],
+                            ),*/
+                          ]))
                   : Container(),
         ),
       ],
@@ -379,29 +342,32 @@ class _BarcodePageState extends State<BarcodePage> {
                 painter: NavCustomPainter(
                     0.12, 100, Colors.yellow[200], Directionality.of(context)),
                 child: Center(
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          produto["nome"],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: 66.0),
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(66.0, 0.0, 5.0, 5.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            produto["nome"],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                            ),
                           ),
-                        ),
-                        Text(
-                          produto["quantidade"] + produto["unidadeMedida"],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13.0,
+                          Text(
+                            produto["quantidade"] + produto["unidadeMedida"],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13.0,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -414,8 +380,8 @@ class _BarcodePageState extends State<BarcodePage> {
                 color: Colors.yellow[200],
                 type: MaterialType.circle,
                 child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Icon(Icons.error_outline, size: 30.0),
+                  padding: const EdgeInsets.fromLTRB(7.5, 6.3, 7.5, 8.7),
+                  child: Icon(FontAwesomeIcons.info, size: 25.0),
                 ),
               ),
             )
@@ -433,111 +399,64 @@ class _BarcodePageState extends State<BarcodePage> {
           children: <Widget>[
             Container(
               margin: EdgeInsets.only(top: 20.0),
+              padding: EdgeInsets.all(0.0),
               color: Colors.blueAccent[100],
               child: CustomPaint(
                 painter: NavCustomPainter(
-                    0.12, 100, Colors.yellow[200], Directionality.of(context)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                    0.12, 100, Colors.greenAccent, Directionality.of(context)),
+                child: Stack(
                   children: <Widget>[
-                    Expanded(
-                      flex: 4,
+                    Positioned(
+                      left: 62,
+                      top: 5,
+                      right: 0,
                       child: Container(
-                        height: 73.0,
-                        child: Center(
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Preço - R\$',
-                                  textAlign: TextAlign.center,
+                        child: Text(
+                          'PREÇO',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15.0),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: Center(
+                        child: Container(
+                          height: 80.0,
+                          padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  'R\$',
+                                  textAlign: TextAlign.right,
                                   style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                     fontSize: 15.0,
                                   ),
                                 ),
-                                FittedBox(
-                                  fit: BoxFit.fitWidth,
+                              ),
+                              SizedBox(width: 10.0),
+                              Expanded(
+                                flex: 5,
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
                                   child: Text(
                                     produto["valor"],
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 19.0),
+                                        fontSize: 33.0),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 6,
-                      child: Container(
-                        padding: EdgeInsets.only(left: 3.5),
-                        //color: Colors.green,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: RawMaterialButton(
-                                onPressed: () {
-                                  if (qtdProduto > 1) {
-                                    setState(() {
-                                      qtdProduto--;
-                                    });
-                                  }
-                                },
-                                child: Icon(
-                                  Icons.remove,
-                                  color: Colors.yellow[200],
-                                  size: 30.0,
-                                ),
-                                shape: CircleBorder(),
-                                elevation: 0,
-                                fillColor: Colors.black,
-                                padding: const EdgeInsets.all(5.0),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Center(
-                                child: Text(qtdProduto.toString()),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: RawMaterialButton(
-                                onPressed: () {
-                                  if (qtdProduto < 99) {
-                                    setState(() {
-                                      qtdProduto++;
-                                    });
-                                  }
-                                },
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.yellow[200],
-                                  size: 30.0,
-                                ),
-                                shape: CircleBorder(),
-                                elevation: 0,
-                                fillColor: Colors.black,
-                                padding: const EdgeInsets.all(5.0),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 6,
-                      child: Container(),
                     ),
                   ],
                 ),
@@ -547,14 +466,307 @@ class _BarcodePageState extends State<BarcodePage> {
               top: 0,
               left: 17.0,
               child: Material(
+                color: Colors.greenAccent,
+                type: MaterialType.circle,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(7.5, 7.5, 7.5, 7.5),
+                  child: Icon(FontAwesomeIcons.tag, size: 25.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          height: 70.0,
+          child: FlatButton(
+            shape: RoundedRectangleBorder(
+                side: BorderSide(color: Colors.black, width: 3.0)),
+            color: Colors.white,
+            disabledColor: Colors.white,
+            disabledTextColor: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Icon(
+                    FontAwesomeIcons.solidEye,
+                    size: 30.0,
+                  ),
+                ),
+                SizedBox(width: 10.0),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'REPORTAR ERRO',
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13.4),
+                  ),
+                ),
+              ],
+            ),
+            onPressed: botaoAddProdutoAtivado
+                ? () {
+                    Timer(Duration(milliseconds: 150), () {
+                      final CurvedNavigationBarState navBarState =
+                          widget.bottomNavigationKey.currentState;
+                      navBarState.setPage(0);
+                    });
+                  }
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildQtdBotaoAdd() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Stack(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: 20.0),
+              padding: EdgeInsets.all(0.0),
+              color: Colors.blueAccent[100],
+              child: CustomPaint(
+                painter: NavCustomPainter(
+                    0.521, 100, Colors.yellow[200], Directionality.of(context)),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      left: 0,
+                      top: 5,
+                      right: 62,
+                      child: Container(
+                        child: Text(
+                          'QUANTIDADE',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15.0),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: Center(
+                        child: Container(
+                          height: 60.0,
+                          padding: EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 2,
+                                  child: RawMaterialButton(
+                                    child: Icon(
+                                      Icons.remove,
+                                      color: Colors.yellow[200],
+                                      size: 30.0,
+                                    ),
+                                    shape: CircleBorder(),
+                                    elevation: 0,
+                                    fillColor: Colors.black,
+                                    onPressed: !botaoAddProdutoAtivado
+                                        ? null
+                                        : (qtdProduto == 1)
+                                            ? null
+                                            : () {
+                                                setState(() {
+                                                  qtdProduto--;
+                                                  valorTotalProduto =
+                                                      double.parse(
+                                                              produto["valor"]
+                                                                  .replaceAll(
+                                                                      ',',
+                                                                      '.')) *
+                                                          qtdProduto;
+                                                });
+                                              },
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: FittedBox(
+                                      fit: BoxFit.fitWidth,
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        child: Text(
+                                          qtdProduto.toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 25.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: RawMaterialButton(
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.yellow[200],
+                                      size: 30.0,
+                                    ),
+                                    shape: CircleBorder(),
+                                    elevation: 0,
+                                    fillColor: Colors.black,
+                                    onPressed: !botaoAddProdutoAtivado
+                                        ? null
+                                        : (qtdProduto == 99)
+                                            ? null
+                                            : () {
+                                                setState(() {
+                                                  qtdProduto++;
+                                                  valorTotalProduto =
+                                                      double.parse(
+                                                              produto["valor"]
+                                                                  .replaceAll(
+                                                                      ',',
+                                                                      '.')) *
+                                                          qtdProduto;
+                                                });
+                                              },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 17.0,
+              child: Material(
                 color: Colors.yellow[200],
                 type: MaterialType.circle,
                 child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Icon(Icons.monetization_on, size: 30.0),
+                  padding: const EdgeInsets.all(4.0),
+                  child: Icon(CommunityMaterialIcons.numeric, size: 32.0),
                 ),
               ),
-            )
+            ),
+          ],
+        ),
+        SizedBox(height: 10.0),
+        Stack(
+          children: <Widget>[
+            Container(
+              height: 70.0,
+              margin: EdgeInsets.only(top: 20.0),
+              padding: EdgeInsets.all(0.0),
+              color: Colors.blueAccent[100],
+              child: CustomPaint(
+                painter: NavCustomPainter(
+                    0.12, 100, Colors.red[400], Directionality.of(context)),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: FlatButton(
+                        padding: EdgeInsets.all(0.0),
+                        color: Colors.transparent,
+                        disabledColor: Colors.transparent,
+                        disabledTextColor: Colors.black,
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(top: 10.0),
+                              child: Center(
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                                  child: buildBottaoAddProduto(),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 62,
+                              top: 5,
+                              right: 0,
+                              child: Container(
+                                child: Text(
+                                  'TOTAL',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.0),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        onPressed: botaoAddProdutoAtivado
+                            ? () {
+                                {
+                                  setState(() {
+                                    botaoAddProdutoAtivado = false;
+                                    addProdutoLista = true;
+                                  });
+                                  Timer(Duration(milliseconds: 400), () {
+                                    setState(() {
+                                      okProdutoLista = true;
+                                      addProdutoLista = false;
+                                    });
+                                  });
+                                  Timer(Duration(milliseconds: 1200), () {
+                                    setState(() {
+                                      okProdutoLista = false;
+                                      botaoAddProdutoAtivado = true;
+                                    });
+                                  });
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: -4,
+              left: 12.0,
+              child: Material(
+                color: Colors.blueAccent[100],
+                type: MaterialType.circle,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(7.5, 6.5, 7.5, 8.5),
+                  child: Icon(FontAwesomeIcons.equals,
+                      size: 35.0, color: Colors.blueAccent[100]),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 17.0,
+              child: Material(
+                color: Colors.red[400],
+                type: MaterialType.circle,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(7.5, 6.5, 7.5, 8.5),
+                  child: Icon(FontAwesomeIcons.equals, size: 25.0),
+                ),
+              ),
+            ),
           ],
         ),
       ],
@@ -562,6 +774,65 @@ class _BarcodePageState extends State<BarcodePage> {
   }
 
   Widget buildBottaoAddProduto() {
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          bottom: 0,
+          right: 40,
+          left: 0,
+          top: 0,
+          child: Container(
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'R\$',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  Expanded(
+                    flex: 5,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        formatPreco.format(valorTotalProduto),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 33.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        AnimatedPositionedDirectional(
+          top: 0,
+          bottom: 0,
+          end: addProdutoLista ? -61.0 : 2.6,
+          curve: Curves.linear,
+          duration: Duration(milliseconds: 300),
+          child: Icon(
+            okProdutoLista
+                ? CommunityMaterialIcons.clipboard_check_outline
+                : CommunityMaterialIcons.clipboard_arrow_right_outline,
+            size: 35.0,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildBottaoAddProduto2() {
     return Positioned(
       right: -35.0,
       bottom: 0,

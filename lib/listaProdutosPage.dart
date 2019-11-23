@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class ListaProdutosPage extends StatefulWidget {
   final int page;
@@ -21,7 +20,7 @@ class ListaProdutosPage extends StatefulWidget {
   _ListaProdutosPageState createState() => _ListaProdutosPageState();
 }
 
-class _ListaProdutosPageState extends State<ListaProdutosPage> {
+class _ListaProdutosPageState extends State<ListaProdutosPage>{
   double coordX = 0.0;
   Duration animationDuration = Duration(milliseconds: 200);
 
@@ -60,44 +59,72 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
 
   @override
   Widget build(BuildContext context) {
-    final CurvedNavigationBarState navBarState =
-        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
-          child: Flex(
-            direction: Axis.vertical,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              MaterialButton(
-                color: Colors.blueAccent,
-                child: Text('ACESSAR PAGE 0'),
-                onPressed: () {
-                  navBarState.setPage(0);
-                },
-              ),
-              MaterialButton(
-                color: Colors.blueAccent,
-                child: Text('ACESSAR PAGE 1'),
-                onPressed: () {
-                  navBarState.setPage(1);
-                },
-              ),
-              MaterialButton(
-                color: Colors.blueAccent,
-                child: Text('ACESSAR PAGE 2'),
-                onPressed: () {
-                  navBarState.setPage(2);
-                },
-              ),
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: MyCustomAppBar(
+            height: 250,
+          ),
+          body: TabBarView(
+            children: [
+              TextField(),
+              TextField(),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+class MyCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final double height;
+
+  const MyCustomAppBar({
+    Key key,
+    @required this.height,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          height: 150.0,
+          child: AppBar(
+            bottom: TabBar(
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.directions_car),
+                  text: "Non persistent",
+                ),
+                Tab(icon: Icon(Icons.directions_transit), text: "Persistent"),
+              ],
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              flex: 3,
+              child: Container(),
+            ),
+            SizedBox(width: 10.0),
+            Expanded(
+              flex: 4,
+              child: Container(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
 }

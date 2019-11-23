@@ -6,6 +6,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:quanto_custa/navCustomPainter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
@@ -44,8 +45,7 @@ List<Map<String, String>> jsonProdutos = [
   },
   {
     "barcode": "7897629207452",
-    "nome":
-        "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||",
+    "nome": "Sabão em pó Omo Multiação e lbá de qualquer coisa vixi maria",
     "unidadeMedida": "kg",
     "quantidade": "1",
     "valor": "8888,40",
@@ -58,11 +58,14 @@ class _BarcodePageState extends State<BarcodePage> {
   Duration animationDuration = Duration(milliseconds: 200);
   Map<String, String> produto;
   DateTime now = DateTime.now();
+  DateTime nowExpired;
+  Duration tempoExpiracaoScan = Duration(seconds: 5);
   double valorTotalProduto;
   NumberFormat formatPreco = NumberFormat("#.00", "pt");
   bool addProdutoLista = false;
   bool okProdutoLista = false;
   bool botaoAddProdutoAtivado = true;
+  bool refazLeitura;
   int qtdProduto = 1;
 
   @override
@@ -94,6 +97,7 @@ class _BarcodePageState extends State<BarcodePage> {
           if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
             _getProduto();
             now = DateTime.now();
+            nowExpired = now.add(tempoExpiracaoScan);
           }
         }
       }
@@ -118,6 +122,69 @@ class _BarcodePageState extends State<BarcodePage> {
       }
     }
     print(produto);
+  }
+
+  _refazerLeitura() {
+    setState(() {
+      botaoAddProdutoAtivado = false;
+      refazLeitura = (DateTime.now().isAfter(nowExpired));
+    });
+
+    if (refazLeitura) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: () {
+                setState(() {
+                  botaoAddProdutoAtivado = true;
+                });
+                return Future.value(true);
+              },
+              child: FlareGiffyDialog(
+                flarePath: 'assets/space_demo.flr',
+                flareAnimation: 'loading',
+                entryAnimation: EntryAnimation.BOTTOM_LEFT,
+                title: Text(
+                  'O TEMPO PASSA...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
+                ),
+                description: Text(
+                    'A leitura feita do código de barras é quase tão antiga quanto o universo.\nPor favor, refaça-a.',
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600)),
+                buttonRadius: 30.0,
+                buttonOkColor: Colors.black,
+                onlyOkButton: true,
+                onOkButtonPressed: () {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    botaoAddProdutoAtivado = true;
+                  });
+                },
+              ),
+            );
+          });
+    } else {
+      setState(() {
+        addProdutoLista = true;
+      });
+      Timer(Duration(milliseconds: 400), () {
+        setState(() {
+          okProdutoLista = true;
+          addProdutoLista = false;
+        });
+      });
+      Timer(Duration(milliseconds: 1200), () {
+        setState(() {
+          okProdutoLista = false;
+          botaoAddProdutoAtivado = true;
+        });
+      });
+    }
   }
 
   @override
@@ -353,6 +420,9 @@ class _BarcodePageState extends State<BarcodePage> {
                           Text(
                             produto["nome"],
                             textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            softWrap: true,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0,
@@ -380,7 +450,7 @@ class _BarcodePageState extends State<BarcodePage> {
                 color: Colors.yellow[200],
                 type: MaterialType.circle,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(7.5, 6.3, 7.5, 8.7),
+                  padding: const EdgeInsets.fromLTRB(8.5, 6.3, 6.5, 8.7),
                   child: Icon(FontAwesomeIcons.info, size: 25.0),
                 ),
               ),
@@ -469,7 +539,7 @@ class _BarcodePageState extends State<BarcodePage> {
                 color: Colors.greenAccent,
                 type: MaterialType.circle,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(7.5, 7.5, 7.5, 7.5),
+                  padding: const EdgeInsets.fromLTRB(9.0, 8.5, 6.0, 6.5),
                   child: Icon(FontAwesomeIcons.tag, size: 25.0),
                 ),
               ),
@@ -510,9 +580,15 @@ class _BarcodePageState extends State<BarcodePage> {
             ),
             onPressed: botaoAddProdutoAtivado
                 ? () {
+                    setState(() {
+                      botaoAddProdutoAtivado = false;
+                    });
                     Timer(Duration(milliseconds: 150), () {
                       final CurvedNavigationBarState navBarState =
                           widget.bottomNavigationKey.currentState;
+                      setState(() {
+                        botaoAddProdutoAtivado = true;
+                      });
                       navBarState.setPage(0);
                     });
                   }
@@ -574,22 +650,20 @@ class _BarcodePageState extends State<BarcodePage> {
                                     shape: CircleBorder(),
                                     elevation: 0,
                                     fillColor: Colors.black,
-                                    onPressed: !botaoAddProdutoAtivado
-                                        ? null
-                                        : (qtdProduto == 1)
-                                            ? null
-                                            : () {
+                                    onPressed: botaoAddProdutoAtivado
+                                        ? (qtdProduto > 1)
+                                            ? () {
+                                                var v = produto["valor"]
+                                                    .replaceAll(',', '.');
                                                 setState(() {
                                                   qtdProduto--;
                                                   valorTotalProduto =
-                                                      double.parse(
-                                                              produto["valor"]
-                                                                  .replaceAll(
-                                                                      ',',
-                                                                      '.')) *
+                                                      double.parse(v) *
                                                           qtdProduto;
                                                 });
-                                              },
+                                              }
+                                            : null
+                                        : null,
                                   ),
                                 ),
                                 Expanded(
@@ -621,22 +695,20 @@ class _BarcodePageState extends State<BarcodePage> {
                                     shape: CircleBorder(),
                                     elevation: 0,
                                     fillColor: Colors.black,
-                                    onPressed: !botaoAddProdutoAtivado
-                                        ? null
-                                        : (qtdProduto == 99)
-                                            ? null
-                                            : () {
+                                    onPressed: botaoAddProdutoAtivado
+                                        ? (qtdProduto < 99)
+                                            ? () {
+                                                var v = produto["valor"]
+                                                    .replaceAll(',', '.');
                                                 setState(() {
                                                   qtdProduto++;
                                                   valorTotalProduto =
-                                                      double.parse(
-                                                              produto["valor"]
-                                                                  .replaceAll(
-                                                                      ',',
-                                                                      '.')) *
+                                                      double.parse(v) *
                                                           qtdProduto;
                                                 });
-                                              },
+                                              }
+                                            : null
+                                        : null,
                                   ),
                                 ),
                               ],
@@ -714,28 +786,8 @@ class _BarcodePageState extends State<BarcodePage> {
                             ),
                           ],
                         ),
-                        onPressed: botaoAddProdutoAtivado
-                            ? () {
-                                {
-                                  setState(() {
-                                    botaoAddProdutoAtivado = false;
-                                    addProdutoLista = true;
-                                  });
-                                  Timer(Duration(milliseconds: 400), () {
-                                    setState(() {
-                                      okProdutoLista = true;
-                                      addProdutoLista = false;
-                                    });
-                                  });
-                                  Timer(Duration(milliseconds: 1200), () {
-                                    setState(() {
-                                      okProdutoLista = false;
-                                      botaoAddProdutoAtivado = true;
-                                    });
-                                  });
-                                }
-                              }
-                            : null,
+                        onPressed:
+                            botaoAddProdutoAtivado ? _refazerLeitura : null,
                       ),
                     ),
                   ],

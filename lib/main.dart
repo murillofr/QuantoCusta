@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   double initial;
   double distance;
   double percentage = 0.0;
+  bool testeFechar;
 
   void _portraitModeOnly() {
     SystemChrome.setPreferredOrientations([
@@ -67,126 +68,131 @@ class _HomePageState extends State<HomePage> with RouteAware {
       ),
     );
     _portraitModeOnly();
-    return Stack(
-      children: <Widget>[
-        Scaffold(
-          body: Container(
-            color: Colors.blueAccent[100],
-            child: SafeArea(
-              child: Container(
-                margin: _page == 0
-                    ? const EdgeInsets.only(bottom: 16.0)
-                    : _page == 1
-                        ? const EdgeInsets.only(bottom: 16.0)
-                        : _page == 2
-                            ? const EdgeInsets.only(bottom: 66.0)
-                            : const EdgeInsets.only(bottom: 16.0),
-                child: _switcherBody(),
+    return WillPopScope(
+      onWillPop: () {
+        return Future.value(false);
+      },
+      child: Stack(
+        children: <Widget>[
+          Scaffold(
+            body: Container(
+              color: Colors.blueAccent[100],
+              child: SafeArea(
+                child: Container(
+                  margin: _page == 0
+                      ? const EdgeInsets.only(bottom: 16.0)
+                      : _page == 1
+                          ? const EdgeInsets.only(bottom: 16.0)
+                          : _page == 2
+                              ? const EdgeInsets.only(bottom: 66.0)
+                              : const EdgeInsets.only(bottom: 16.0),
+                  child: _switcherBody(),
+                ),
               ),
             ),
-          ),
-          bottomNavigationBar: CurvedNavigationBar(
-            key: _bottomNavigationKey,
-            index: 2,
-            height: 60.0,
-            color: Colors.blueAccent,
-            buttonBackgroundColor: Colors.blueAccent,
-            backgroundColor: Colors.blueAccent[100],
-            animationCurve: Curves.decelerate,
-            animationDuration: Duration(milliseconds: 300),
-            items: <Widget>[
-              Padding(
-                padding: _page == 0
-                    ? const EdgeInsets.all(1.4)
-                    : const EdgeInsets.only(top: 10.0),
-                child: Icon(Icons.error_outline, size: 30),
-              ),
-              Padding(
-                padding: _page == 1
-                    ? const EdgeInsets.all(1.4)
-                    : const EdgeInsets.only(top: 10.0),
-                child: Icon(Icons.person_outline, size: 30),
-              ),
-              Padding(
-                padding: _page == 2
-                    ? const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 3.0)
-                    : const EdgeInsets.only(top: 10.0),
-                child: Icon(CommunityMaterialIcons.barcode_scan, size: 30),
-              ),
-              Padding(
-                padding: _page == 3
-                    ? const EdgeInsets.fromLTRB(1.1, 0.0, 1.1, 3.5)
-                    : const EdgeInsets.only(top: 10.0),
-                child: Icon(CommunityMaterialIcons.clipboard_text_outline,
-                    size: 30),
-              ),
-            ],
-            onTap: (index) {
-              setState(() {
-                if (_page != index) {
-                  _pageAntiga = _page;
-                  _page = index;
-                  _controleTransicao = 'TAP';
-
-                  if (_page == 2) {
-                    if ((_pageAntiga == 0 && _page == 2) ||
-                        ((_pageAntiga == 1 && _page == 2))) {
-                      animationDurationFloatingButton =
-                          Duration(milliseconds: 0);
-                      _fabVisible = false;
-                      coordX = MediaQuery.of(context).size.width;
-
-                      Timer(Duration(milliseconds: 50), () {
-                        setState(() => {
-                              animationDurationFloatingButton =
-                                  Duration(milliseconds: 200),
-                              _fabVisible = true,
-                              coordX = 0.0,
-                            });
-                      });
-                    }
-                    if (_pageAntiga == 3 && _page == 2) {
-                      animationDurationFloatingButton =
-                          Duration(milliseconds: 0);
-                      _fabVisible = false;
-                      coordX = -MediaQuery.of(context).size.width;
-
-                      Timer(Duration(milliseconds: 50), () {
-                        setState(() => {
-                              animationDurationFloatingButton =
-                                  Duration(milliseconds: 200),
-                              _fabVisible = true,
-                              coordX = 0.0,
-                            });
-                      });
-                    }
-                  } else {
-                    _fabVisible = false;
-                  }
-                }
-              });
-            },
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: AnimatedContainer(
-              duration: animationDurationFloatingButton,
-              transform: Matrix4.translationValues(coordX, 0.0, 0.0),
-              child: Visibility(
-                visible: _fabVisible,
-                child: RectGetter(
-                  key: rectGetterKey,
-                  child: FloatingActionButton.extended(
-                    label: Text('LER CÓDIGO DE BARRAS'),
-                    onPressed: _onTapScan,
-                    elevation: 0,
-                    backgroundColor: Colors.black,
-                  ),
+            bottomNavigationBar: CurvedNavigationBar(
+              key: _bottomNavigationKey,
+              index: 2,
+              height: 60.0,
+              color: Colors.blueAccent,
+              buttonBackgroundColor: Colors.blueAccent,
+              backgroundColor: Colors.blueAccent[100],
+              animationCurve: Curves.decelerate,
+              animationDuration: Duration(milliseconds: 300),
+              items: <Widget>[
+                Padding(
+                  padding: _page == 0
+                      ? const EdgeInsets.all(1.4)
+                      : const EdgeInsets.only(top: 10.0),
+                  child: Icon(Icons.error_outline, size: 30),
                 ),
-              )),
-        ),
-        _ripple(),
-      ],
+                Padding(
+                  padding: _page == 1
+                      ? const EdgeInsets.all(1.4)
+                      : const EdgeInsets.only(top: 10.0),
+                  child: Icon(Icons.person_outline, size: 30),
+                ),
+                Padding(
+                  padding: _page == 2
+                      ? const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 3.0)
+                      : const EdgeInsets.only(top: 10.0),
+                  child: Icon(CommunityMaterialIcons.barcode_scan, size: 30),
+                ),
+                Padding(
+                  padding: _page == 3
+                      ? const EdgeInsets.fromLTRB(1.1, 0.0, 1.1, 3.5)
+                      : const EdgeInsets.only(top: 10.0),
+                  child: Icon(CommunityMaterialIcons.clipboard_text_outline,
+                      size: 30),
+                ),
+              ],
+              onTap: (index) {
+                setState(() {
+                  if (_page != index) {
+                    _pageAntiga = _page;
+                    _page = index;
+                    _controleTransicao = 'TAP';
+
+                    if (_page == 2) {
+                      if ((_pageAntiga == 0 && _page == 2) ||
+                          ((_pageAntiga == 1 && _page == 2))) {
+                        animationDurationFloatingButton =
+                            Duration(milliseconds: 0);
+                        _fabVisible = false;
+                        coordX = MediaQuery.of(context).size.width;
+
+                        Timer(Duration(milliseconds: 50), () {
+                          setState(() => {
+                                animationDurationFloatingButton =
+                                    Duration(milliseconds: 200),
+                                _fabVisible = true,
+                                coordX = 0.0,
+                              });
+                        });
+                      }
+                      if (_pageAntiga == 3 && _page == 2) {
+                        animationDurationFloatingButton =
+                            Duration(milliseconds: 0);
+                        _fabVisible = false;
+                        coordX = -MediaQuery.of(context).size.width;
+
+                        Timer(Duration(milliseconds: 50), () {
+                          setState(() => {
+                                animationDurationFloatingButton =
+                                    Duration(milliseconds: 200),
+                                _fabVisible = true,
+                                coordX = 0.0,
+                              });
+                        });
+                      }
+                    } else {
+                      _fabVisible = false;
+                    }
+                  }
+                });
+              },
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: AnimatedContainer(
+                duration: animationDurationFloatingButton,
+                transform: Matrix4.translationValues(coordX, 0.0, 0.0),
+                child: Visibility(
+                  visible: _fabVisible,
+                  child: RectGetter(
+                    key: rectGetterKey,
+                    child: FloatingActionButton.extended(
+                      label: Text('LER CÓDIGO DE BARRAS'),
+                      onPressed: _onTapScan,
+                      elevation: 0,
+                      backgroundColor: Colors.black,
+                    ),
+                  ),
+                )),
+          ),
+          _ripple(),
+        ],
+      ),
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:quanto_custa/navCustomPainter.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
+import 'package:quanto_custa/produtosAtivos.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
@@ -45,10 +46,10 @@ List<Map<String, String>> jsonProdutos = [
   },
   {
     "barcode": "7897629207452",
-    "nome": "Sabão em pó Omo Multiação e lbá de qualquer coisa vixi maria",
+    "nome": "Sabão em pó Omo Multiação",
     "unidadeMedida": "kg",
     "quantidade": "1",
-    "valor": "8888,40",
+    "valor": "12,40",
     "imagem": "assets/omo.png",
   },
 ];
@@ -59,7 +60,7 @@ class _BarcodePageState extends State<BarcodePage> {
   Map<String, String> produto;
   DateTime now = DateTime.now();
   DateTime nowExpired;
-  Duration tempoExpiracaoScan = Duration(seconds: 5);
+  Duration tempoExpiracaoScan = Duration(days: 1);
   double valorTotalProduto;
   NumberFormat formatPreco = NumberFormat("#.00", "pt");
   bool addProdutoLista = false;
@@ -176,6 +177,7 @@ class _BarcodePageState extends State<BarcodePage> {
         setState(() {
           okProdutoLista = true;
           addProdutoLista = false;
+          ProdutosAtivos.addProduto(produto, qtdProduto);
         });
       });
       Timer(Duration(milliseconds: 1200), () {
@@ -363,33 +365,29 @@ class _BarcodePageState extends State<BarcodePage> {
                   ? Container(
                       padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 5.0),
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center, //.center
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            buildNomeProduto(),
-                            SizedBox(height: 10.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 3,
-                                  child: buildPrecoProduto(),
-                                ),
-                                SizedBox(width: 10.0),
-                                Expanded(
-                                  flex: 4,
-                                  child: buildQtdBotaoAdd(),
-                                ),
-                              ],
-                            ),
-                            /*Stack(
-                              children: <Widget>[
-                                buildPrecoProduto2(),
-                                buildBottaoAddProduto(),
-                              ],
-                            ),*/
-                          ]))
+                        mainAxisAlignment: MainAxisAlignment.center, //.center
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          buildNomeProduto(),
+                          SizedBox(height: 10.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 3,
+                                child: buildPrecoProduto(),
+                              ),
+                              SizedBox(width: 10.0),
+                              Expanded(
+                                flex: 4,
+                                child: buildQtdBotaoAdd(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
                   : Container(),
         ),
       ],

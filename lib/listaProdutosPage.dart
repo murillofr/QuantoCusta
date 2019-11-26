@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quanto_custa/produtosAtivos.dart';
+import 'package:quanto_custa/produtosHistorico.dart';
 
 class ListaProdutosPage extends StatefulWidget {
   final int page;
@@ -20,12 +22,15 @@ class ListaProdutosPage extends StatefulWidget {
   _ListaProdutosPageState createState() => _ListaProdutosPageState();
 }
 
-class _ListaProdutosPageState extends State<ListaProdutosPage>{
+class _ListaProdutosPageState extends State<ListaProdutosPage>
+    with SingleTickerProviderStateMixin {
   double coordX = 0.0;
   Duration animationDuration = Duration(milliseconds: 200);
+  TabController _tabController;
 
   @override
   void initState() {
+    _tabController = new TabController(length: 2, vsync: this);
     super.initState();
   }
 
@@ -62,69 +67,42 @@ class _ListaProdutosPageState extends State<ListaProdutosPage>{
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: MyCustomAppBar(
-            height: 250,
+      child: Column(
+        children: [
+          Container(
+            height: 150.0,
+            color: Colors.green,
           ),
-          body: TabBarView(
-            children: [
-              TextField(),
-              TextField(),
+          TabBar(
+            indicatorColor: Colors.black,
+            labelStyle: TextStyle(fontSize: 13.0),
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.black54,
+            isScrollable: false,
+            unselectedLabelStyle: TextStyle(fontSize: 13.0),
+            controller: _tabController,
+            tabs: [
+              Tab(
+                text: "LISTA DE PRODUTOS",
+                icon: Icon(Icons.check_circle),
+              ),
+              Tab(
+                text: "HISTÓRICO DE LEITURAS",
+                icon: Icon(Icons.crop_square),
+              )
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class MyCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double height;
-
-  const MyCustomAppBar({
-    Key key,
-    @required this.height,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          height: 150.0,
-          child: AppBar(
-            bottom: TabBar(
-              tabs: [
-                Tab(
-                  icon: Icon(Icons.directions_car),
-                  text: "Non persistent",
-                ),
-                Tab(icon: Icon(Icons.directions_transit), text: "Persistent"),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                ProdutosAtivos(),
+                ProdutosHistorico(),
               ],
             ),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: Container(),
-            ),
-            SizedBox(width: 10.0),
-            Expanded(
-              flex: 4,
-              child: Container(),
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(height);
 }

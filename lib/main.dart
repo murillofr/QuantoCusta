@@ -49,7 +49,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
   double initial;
   double distance;
   double percentage = 0.0;
-  bool testeFechar;
 
   void _portraitModeOnly() {
     SystemChrome.setPreferredOrientations([

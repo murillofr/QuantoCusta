@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
@@ -10,7 +11,8 @@ class ProdutosAtivos extends StatefulWidget {
   @override
   ProdutosAtivosState createState() => ProdutosAtivosState();
 
-  static addProduto(Map<String, String> produto, int qtdProduto) {
+  static addProduto(
+      Map<String, String> produto, int qtdProduto, double valorTotalProduto) {
     int index = listData.length;
     listData.add(
       ProdutoAtivoModel(
@@ -21,6 +23,7 @@ class ProdutosAtivos extends StatefulWidget {
         valor: produto["valor"],
         imagem: produto["imagem"],
         qtdProduto: qtdProduto.toString(),
+        valorTotalProduto: valorTotalProduto,
       ),
     );
     if (_listKey.currentState != null) {
@@ -32,6 +35,9 @@ class ProdutosAtivos extends StatefulWidget {
 
 class ProdutosAtivosState extends State<ProdutosAtivos>
     with AutomaticKeepAliveClientMixin<ProdutosAtivos> {
+  NumberFormat formatPreco = NumberFormat("#.00", "pt");
+  double valorTodosProdutos;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -51,21 +57,140 @@ class ProdutosAtivosState extends State<ProdutosAtivos>
           ),
         );
       },
-      duration: Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 500),
     );
   }
 
   Widget _buildItem(ProdutoAtivoModel produto, [int index]) {
-    return ListTile(
-      key: ValueKey<ProdutoAtivoModel>(produto),
-      title: Text(produto.nome),
-      subtitle: Text(produto.barcode),
-      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-      leading: CircleAvatar(
-        backgroundColor: Colors.white,
-        backgroundImage: AssetImage(produto.imagem),
+    if (index != null) {
+      if (index == 0) {
+        valorTodosProdutos = 0.0;
+      }
+      valorTodosProdutos = valorTodosProdutos + produto.valorTotalProduto;
+    }
+    print(valorTodosProdutos);
+    return Container(
+      margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 5.0),
+      child: Material(
+        color: Colors.white,
+        child: InkWell(
+          onTap: () {},
+          onLongPress: index != null ? () => delProduto(index) : null,
+          child: Stack(
+            children: <Widget>[
+              ListTile(
+                dense: true,
+                key: ValueKey<ProdutoAtivoModel>(produto),
+                title: Text(
+                  produto.nome,
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.0,
+                  ),
+                ),
+                subtitle: Text(
+                  produto.quantidade +
+                      produto.unidadeMedida +
+                      "\nValor Unitário: R\$ " +
+                      produto.valor,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.0,
+                  ),
+                ),
+                contentPadding: EdgeInsets.fromLTRB(10.0, 0.0, 92.0, 0.0),
+                leading: Container(
+                  width: 40.0,
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 5.0,
+                        spreadRadius: 0.0,
+                        offset: Offset(0.0, 0.0),
+                      )
+                    ],
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage(produto.imagem),
+                      fit: BoxFit.scaleDown,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.red[400],
+                  width: 88.0,
+                  padding: EdgeInsets.all(5.0),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Qtd: ' + produto.qtdProduto,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15.0,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 4,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  'R\$',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 9.0,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 4.0),
+                              Expanded(
+                                flex: 5,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    formatPreco
+                                        .format(produto.valorTotalProduto),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25.0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      onLongPress: index != null ? () => delProduto(index) : null,
     );
   }
 
@@ -73,12 +198,15 @@ class ProdutosAtivosState extends State<ProdutosAtivos>
   Widget build(BuildContext context) {
     super.build(context);
     return AnimatedList(
+      padding: EdgeInsets.only(top: 5.0),
       key: _listKey,
       initialItemCount: listData.length,
       itemBuilder: (BuildContext context, int index, Animation animation) {
         return FadeTransition(
           opacity: animation,
-          child: _buildItem(listData[index], index),
+          child: Container(
+            child: _buildItem(listData[index], index),
+          ),
         );
       },
     );
@@ -94,6 +222,7 @@ class ProdutoAtivoModel {
     this.valor,
     this.imagem,
     this.qtdProduto,
+    this.valorTotalProduto,
   });
   String barcode;
   String nome;
@@ -102,6 +231,7 @@ class ProdutoAtivoModel {
   String valor;
   String imagem;
   String qtdProduto;
+  double valorTotalProduto;
 
   @override
   bool operator ==(Object other) =>
@@ -114,7 +244,8 @@ class ProdutoAtivoModel {
           quantidade == other.quantidade &&
           valor == other.valor &&
           imagem == other.imagem &&
-          qtdProduto == other.qtdProduto;
+          qtdProduto == other.qtdProduto &&
+          valorTotalProduto == other.valorTotalProduto;
 
   @override
   int get hashCode =>
@@ -124,7 +255,8 @@ class ProdutoAtivoModel {
       quantidade.hashCode ^
       valor.hashCode ^
       imagem.hashCode ^
-      qtdProduto.hashCode;
+      qtdProduto.hashCode ^
+      valorTotalProduto.hashCode;
 }
 
 List<ProdutoAtivoModel> listData = [];

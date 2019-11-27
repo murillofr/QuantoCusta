@@ -177,7 +177,7 @@ class _BarcodePageState extends State<BarcodePage> {
         setState(() {
           okProdutoLista = true;
           addProdutoLista = false;
-          ProdutosAtivos.addProduto(produto, qtdProduto);
+          ProdutosAtivos.addProduto(produto, qtdProduto, valorTotalProduto);
         });
       });
       Timer(Duration(milliseconds: 1200), () {
@@ -879,93 +879,6 @@ class _BarcodePageState extends State<BarcodePage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildBottaoAddProduto2() {
-    return Positioned(
-      right: -35.0,
-      bottom: 0,
-      top: 20,
-      child: FlatButton(
-          color: Colors.redAccent,
-          disabledColor: Colors.redAccent,
-          disabledTextColor: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(40.0),
-          ),
-          child: Container(
-            height: 73.0,
-            width: 131.0,
-            child: Stack(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 71.0,
-                      padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Total - R\$',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15.0,
-                            ),
-                          ),
-                          FittedBox(
-                            fit: BoxFit.fitWidth,
-                            child: Text(
-                              formatPreco.format(valorTotalProduto),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 19.0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                AnimatedPositionedDirectional(
-                  top: 0,
-                  bottom: 0,
-                  end: addProdutoLista ? -125.0 : 25.0,
-                  curve: Curves.linear,
-                  duration: Duration(milliseconds: 300),
-                  child: Icon(
-                    okProdutoLista
-                        ? CommunityMaterialIcons.clipboard_check_outline
-                        : CommunityMaterialIcons.clipboard_arrow_right_outline,
-                    size: 30.0,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          onPressed: botaoAddProdutoAtivado
-              ? () {
-                  setState(() {
-                    botaoAddProdutoAtivado = false;
-                    addProdutoLista = true;
-                  });
-                  Timer(Duration(milliseconds: 400), () {
-                    setState(() {
-                      okProdutoLista = true;
-                      addProdutoLista = false;
-                    });
-                  });
-                  Timer(Duration(milliseconds: 1200), () {
-                    setState(() {
-                      okProdutoLista = false;
-                      botaoAddProdutoAtivado = true;
-                    });
-                  });
-                }
-              : null),
     );
   }
 }

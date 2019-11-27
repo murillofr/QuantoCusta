@@ -73,32 +73,49 @@ class _ListaProdutosPageState extends State<ListaProdutosPage>
             height: 150.0,
             color: Colors.green,
           ),
-          TabBar(
-            indicatorColor: Colors.black,
-            labelStyle: TextStyle(fontSize: 13.0),
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.black54,
-            isScrollable: false,
-            unselectedLabelStyle: TextStyle(fontSize: 13.0),
-            controller: _tabController,
-            tabs: [
-              Tab(
-                text: "LISTA DE PRODUTOS",
-                icon: Icon(Icons.check_circle),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.black54,
+                  width: 3.0,
+                ),
               ),
-              Tab(
-                text: "HISTÓRICO DE LEITURAS",
-                icon: Icon(Icons.crop_square),
-              )
-            ],
+            ),
+            child: TabBar(
+              indicatorColor: Colors.black,
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(color: Colors.black, width: 3.0),
+                insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, -3.0),
+              ),
+              labelStyle: TextStyle(fontSize: 13.0),
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.black54,
+              isScrollable: false,
+              unselectedLabelStyle: TextStyle(fontSize: 13.0),
+              controller: _tabController,
+              tabs: [
+                Tab(
+                  text: "LISTA DE PRODUTOS",
+                  icon: Icon(Icons.check_circle),
+                ),
+                Tab(
+                  text: "HISTÓRICO DE LEITURAS",
+                  icon: Icon(Icons.crop_square),
+                )
+              ],
+            ),
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                ProdutosAtivos(),
-                ProdutosHistorico(),
-              ],
+            child: Container(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  ProdutosAtivos(),
+                  ProdutosHistorico(),
+                ],
+              ),
             ),
           ),
         ],

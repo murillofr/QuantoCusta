@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:quanto_custa/produtosAtivos.dart';
 import 'package:quanto_custa/produtosHistorico.dart';
+import 'package:intl/intl.dart';
+import 'package:quanto_custa/navCustomPainter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+double valorTodosProdutos = 0.0;
 
 class ListaProdutosPage extends StatefulWidget {
   final int page;
@@ -20,6 +25,10 @@ class ListaProdutosPage extends StatefulWidget {
 
   @override
   _ListaProdutosPageState createState() => _ListaProdutosPageState();
+
+  static atualizarValorFilhoParaPai(double valor) {
+    valorTodosProdutos = valor;
+  }
 }
 
 class _ListaProdutosPageState extends State<ListaProdutosPage>
@@ -27,6 +36,8 @@ class _ListaProdutosPageState extends State<ListaProdutosPage>
   double coordX = 0.0;
   Duration animationDuration = Duration(milliseconds: 200);
   TabController _tabController;
+  NumberFormat formatPreco = NumberFormat("#.00", "pt");
+  double valorOrcamento = 0.0;
 
   @override
   void initState() {
@@ -62,6 +73,184 @@ class _ListaProdutosPageState extends State<ListaProdutosPage>
     super.didUpdateWidget(oldWidget);
   }
 
+  atualizarValorDentroPai(double valor) {
+    setState(() {
+      valorTodosProdutos = valor;
+    });
+  }
+
+  Widget buildOrcamento() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 20.0),
+          padding: EdgeInsets.all(0.0),
+          color: Colors.white,
+          child: CustomPaint(
+            painter: NavCustomPainter(
+                0.12, 100, Colors.greenAccent[400], Directionality.of(context)),
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: 62,
+                  top: 5,
+                  right: 0,
+                  child: Container(
+                    child: Text(
+                      'ORÇAMENTO',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 15.0),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: Center(
+                    child: Container(
+                      height: 80.0,
+                      padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'R\$',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            flex: 5,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                valorTodosProdutos > 0.0
+                                    ? formatPreco.format(valorTodosProdutos)
+                                    : "0,00",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 33.0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: 17.0,
+          child: Material(
+            color: Colors.greenAccent[400],
+            type: MaterialType.circle,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(9.0, 8.5, 6.0, 6.5),
+              child: Icon(FontAwesomeIcons.tag, size: 25.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildValorTotalProdutos() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 20.0),
+          padding: EdgeInsets.all(0.0),
+          color: Colors.white,
+          child: CustomPaint(
+            painter: NavCustomPainter(
+                0.12, 100, Colors.red[400], Directionality.of(context)),
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: 62,
+                  top: 5,
+                  right: 0,
+                  child: Container(
+                    child: Text(
+                      'PREÇO',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 15.0),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: Center(
+                    child: Container(
+                      height: 80.0,
+                      padding: EdgeInsets.fromLTRB(5.0, 28.0, 5.0, 5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'R\$',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            flex: 5,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                valorTodosProdutos > 0.0
+                                    ? formatPreco.format(valorTodosProdutos)
+                                    : "0,00",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 33.0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: 17.0,
+          child: Material(
+            color: Colors.red[400],
+            type: MaterialType.circle,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(9.0, 8.5, 6.0, 6.5),
+              child: Icon(FontAwesomeIcons.tag, size: 25.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -69,9 +258,37 @@ class _ListaProdutosPageState extends State<ListaProdutosPage>
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
       child: Column(
         children: [
-          Container(
-            height: 150.0,
-            color: Colors.green,
+          Material(
+            child: Container(
+              padding: EdgeInsets.all(5.0),
+              height: 250.0,
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: buildOrcamento(),
+                          ),
+                          SizedBox(width: 5.0),
+                          Expanded(
+                            flex: 1,
+                            child: buildValorTotalProdutos(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Text('data'),
+                ],
+              ),
+            ),
           ),
           Container(
             decoration: BoxDecoration(
@@ -112,7 +329,9 @@ class _ListaProdutosPageState extends State<ListaProdutosPage>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  ProdutosAtivos(),
+                  ProdutosAtivos(
+                    parentAction: atualizarValorDentroPai,
+                  ),
                   ProdutosHistorico(),
                 ],
               ),

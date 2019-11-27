@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:quanto_custa/listaProdutosPage.dart';
 
 final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
 class ProdutosAtivos extends StatefulWidget {
+  final ValueChanged<double> parentAction;
+
   const ProdutosAtivos({
     Key key,
+    this.parentAction,
   }) : super(key: key);
 
   @override
@@ -43,6 +47,10 @@ class ProdutosAtivosState extends State<ProdutosAtivos>
 
   void delProduto(int index) {
     var produto = listData.removeAt(index);
+    double teste = 0.0;
+    listData.forEach((n) => teste = teste + n.valorTotalProduto);
+    widget.parentAction(teste);
+
     _listKey.currentState.removeItem(
       index,
       (BuildContext context, Animation<double> animation) {
@@ -67,8 +75,8 @@ class ProdutosAtivosState extends State<ProdutosAtivos>
         valorTodosProdutos = 0.0;
       }
       valorTodosProdutos = valorTodosProdutos + produto.valorTotalProduto;
+      ListaProdutosPage.atualizarValorFilhoParaPai(valorTodosProdutos);
     }
-    print(valorTodosProdutos);
     return Container(
       margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 5.0),
       child: Material(

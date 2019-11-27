@@ -471,7 +471,7 @@ class _BarcodePageState extends State<BarcodePage> {
               color: Colors.blueAccent[100],
               child: CustomPaint(
                 painter: NavCustomPainter(
-                    0.12, 100, Colors.greenAccent, Directionality.of(context)),
+                    0.12, 100, Colors.greenAccent[400], Directionality.of(context)),
                 child: Stack(
                   children: <Widget>[
                     Positioned(
@@ -534,7 +534,7 @@ class _BarcodePageState extends State<BarcodePage> {
               top: 0,
               left: 17.0,
               child: Material(
-                color: Colors.greenAccent,
+                color: Colors.greenAccent[400],
                 type: MaterialType.circle,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(9.0, 8.5, 6.0, 6.5),

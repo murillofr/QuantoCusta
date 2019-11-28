@@ -405,7 +405,7 @@ class _BarcodePageState extends State<BarcodePage> {
               color: Colors.blueAccent[100],
               child: CustomPaint(
                 painter: NavCustomPainter(
-                    0.12, 100, Colors.yellow[200], Directionality.of(context)),
+                    0.12, 100, Colors.yellow[400], Directionality.of(context)),
                 child: Center(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minHeight: 66.0),
@@ -445,7 +445,7 @@ class _BarcodePageState extends State<BarcodePage> {
               top: 0,
               left: 17.0,
               child: Material(
-                color: Colors.yellow[200],
+                color: Colors.yellow[400],
                 type: MaterialType.circle,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.5, 6.3, 6.5, 8.7),
@@ -470,8 +470,8 @@ class _BarcodePageState extends State<BarcodePage> {
               padding: EdgeInsets.all(0.0),
               color: Colors.blueAccent[100],
               child: CustomPaint(
-                painter: NavCustomPainter(
-                    0.12, 100, Colors.greenAccent[400], Directionality.of(context)),
+                painter: NavCustomPainter(0.12, 100, Colors.greenAccent[400],
+                    Directionality.of(context)),
                 child: Stack(
                   children: <Widget>[
                     Positioned(
@@ -589,6 +589,27 @@ class _BarcodePageState extends State<BarcodePage> {
                       });
                       navBarState.setPage(0);
                     });
+                    Timer(Duration(milliseconds: 400), () {
+                      showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Reporte enviado com sucesso. Obrigado!',
+                              textAlign: TextAlign.center,
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    });
                   }
                 : null,
           ),
@@ -610,7 +631,7 @@ class _BarcodePageState extends State<BarcodePage> {
               color: Colors.blueAccent[100],
               child: CustomPaint(
                 painter: NavCustomPainter(
-                    0.521, 100, Colors.yellow[200], Directionality.of(context)),
+                    0.521, 100, Colors.yellow[400], Directionality.of(context)),
                 child: Stack(
                   children: <Widget>[
                     Positioned(
@@ -642,7 +663,7 @@ class _BarcodePageState extends State<BarcodePage> {
                                   child: RawMaterialButton(
                                     child: Icon(
                                       Icons.remove,
-                                      color: Colors.yellow[200],
+                                      color: Colors.yellow[400],
                                       size: 30.0,
                                     ),
                                     shape: CircleBorder(),
@@ -687,7 +708,7 @@ class _BarcodePageState extends State<BarcodePage> {
                                   child: RawMaterialButton(
                                     child: Icon(
                                       Icons.add,
-                                      color: Colors.yellow[200],
+                                      color: Colors.yellow[400],
                                       size: 30.0,
                                     ),
                                     shape: CircleBorder(),
@@ -723,7 +744,7 @@ class _BarcodePageState extends State<BarcodePage> {
               top: 0,
               right: 17.0,
               child: Material(
-                color: Colors.yellow[200],
+                color: Colors.yellow[400],
                 type: MaterialType.circle,
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),

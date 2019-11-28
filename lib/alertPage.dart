@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class AlertPage extends StatefulWidget {
   final int page;
@@ -60,8 +59,6 @@ class _AlertPageState extends State<AlertPage> {
 
   @override
   Widget build(BuildContext context) {
-    final CurvedNavigationBarState navBarState =
-        widget.bottomNavigationKey.currentState;
     return AnimatedContainer(
       duration: animationDuration,
       transform: Matrix4.translationValues(coordX, 0.0, 0.0),
@@ -73,27 +70,6 @@ class _AlertPageState extends State<AlertPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              MaterialButton(
-                color: Colors.blueAccent,
-                child: Text('ACESSAR PAGE 1'),
-                onPressed: () {
-                  navBarState.setPage(1);
-                },
-              ),
-              MaterialButton(
-                color: Colors.blueAccent,
-                child: Text('ACESSAR PAGE 2'),
-                onPressed: () {
-                  navBarState.setPage(2);
-                },
-              ),
-              MaterialButton(
-                color: Colors.blueAccent,
-                child: Text('ACESSAR PAGE 3'),
-                onPressed: () {
-                  navBarState.setPage(3);
-                },
-              ),
             ],
           ),
         ),

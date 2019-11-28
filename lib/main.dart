@@ -181,6 +181,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   child: RectGetter(
                     key: rectGetterKey,
                     child: FloatingActionButton.extended(
+                      icon: Padding(
+                        padding: EdgeInsets.only(bottom: 2.5),
+                        child: Icon(CommunityMaterialIcons.barcode_scan, size: 25),),
                       label: Text('LER CÓDIGO DE BARRAS'),
                       onPressed: _onTapScan,
                       elevation: 0,

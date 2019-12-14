@@ -32,6 +32,7 @@ dependencies:
   swipedetector: ^1.2.0
   intl: ^0.16.0
   giffy_dialog: ^1.6.1
+  loading: ^1.0.2
 
 dev_dependencies:
   flutter_test:

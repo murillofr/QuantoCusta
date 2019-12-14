@@ -18,21 +18,37 @@ class ProdutosAtivos extends StatefulWidget {
   static addProduto(
       Map<String, String> produto, int qtdProduto, double valorTotalProduto) {
     int index = listData.length;
-    listData.add(
-      ProdutoAtivoModel(
-        barcode: produto["barcode"],
-        nome: produto["nome"],
-        unidadeMedida: produto["unidadeMedida"],
-        quantidade: produto["quantidade"],
-        valor: produto["valor"],
-        imagem: produto["imagem"],
-        qtdProduto: qtdProduto.toString(),
-        valorTotalProduto: valorTotalProduto,
-      ),
-    );
-    if (_listKey.currentState != null) {
-      _listKey.currentState
-          .insertItem(index, duration: Duration(milliseconds: 500));
+    int indexEncontrado;
+
+    for (var i = 0; i < listData.length; i++) {
+      if (produto["barcode"] == listData[i].barcode) {
+        indexEncontrado = i;
+        break;
+      }
+    }
+
+    if (indexEncontrado != null) {
+      int a = int.parse(listData[indexEncontrado].qtdProduto);
+      double b = listData[indexEncontrado].valorTotalProduto;
+      listData[indexEncontrado].qtdProduto = (a + qtdProduto).toString();
+      listData[indexEncontrado].valorTotalProduto = (b + valorTotalProduto);
+    } else {
+      listData.add(
+        ProdutoAtivoModel(
+          barcode: produto["barcode"],
+          nome: produto["nome"],
+          unidadeMedida: produto["unidadeMedida"],
+          quantidade: produto["quantidade"],
+          valor: produto["valor"],
+          imagem: produto["imagem"],
+          qtdProduto: qtdProduto.toString(),
+          valorTotalProduto: valorTotalProduto,
+        ),
+      );
+      if (_listKey.currentState != null) {
+        _listKey.currentState
+            .insertItem(index, duration: Duration(milliseconds: 500));
+      }
     }
   }
 }

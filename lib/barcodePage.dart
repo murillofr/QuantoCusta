@@ -8,6 +8,7 @@ import 'package:community_material_icon/community_material_icon.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:quanto_custa/produtosAtivos.dart';
+import 'package:quanto_custa/produtosHistorico.dart';
 
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
@@ -60,7 +61,9 @@ class _BarcodePageState extends State<BarcodePage> {
   Map<String, String> produto;
   DateTime now = DateTime.now();
   DateTime nowExpired;
-  Duration tempoExpiracaoScan = Duration(days: 1);
+  String dataLeitura = '';
+  String horaLeitura = '';
+  Duration tempoExpiracaoScan = Duration(seconds: 10);
   double valorTotalProduto;
   NumberFormat formatPreco = NumberFormat("#.00", "pt");
   bool addProdutoLista = false;
@@ -97,7 +100,6 @@ class _BarcodePageState extends State<BarcodePage> {
           // Verifica se é a primeira vez que o scan está sendo chamado
           if (oldWidget.inOutScan == 'in' && widget.inOutScan == 'out') {
             _getProduto();
-            now = DateTime.now();
             nowExpired = now.add(tempoExpiracaoScan);
           }
         }
@@ -114,6 +116,10 @@ class _BarcodePageState extends State<BarcodePage> {
           qtdProduto = 1;
           valorTotalProduto =
               double.parse(produto["valor"].replaceAll(',', '.'));
+          now = DateTime.now();
+          dataLeitura = DateFormat("dd/MM/yyyy").format(now);
+          horaLeitura = DateFormat("HH:mm:ss").format(now);
+          ProdutosHistorico.addProduto(produto, dataLeitura, horaLeitura);
         });
         break;
       } else {
@@ -210,9 +216,7 @@ class _BarcodePageState extends State<BarcodePage> {
                         children: <Widget>[
                           buildImagemProduto(),
                           buildBarcodeProduto(),
-                          buildDataHoraPesquisa(
-                              DateFormat("dd/MM/yyyy").format(now),
-                              DateFormat("HH:mm:ss").format(now)),
+                          buildDataHoraPesquisa(dataLeitura, horaLeitura),
                         ],
                       ),
                       Expanded(
@@ -594,9 +598,26 @@ class _BarcodePageState extends State<BarcodePage> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text(
-                              'Reporte enviado com sucesso. Obrigado!',
+                            title: RichText(
                               textAlign: TextAlign.center,
+                              text: TextSpan(
+                                // set the default style for the children TextSpans
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .body1
+                                    .copyWith(fontSize: 25),
+                                children: [
+                                  TextSpan(
+                                    text: 'Reporte do produto\n',
+                                  ),
+                                  TextSpan(
+                                      text: produto["nome"],
+                                      style: TextStyle(color: Colors.blue)),
+                                  TextSpan(
+                                    text: '\nenviado com sucesso. Obrigado!',
+                                  ),
+                                ],
+                              ),
                             ),
                             actions: <Widget>[
                               FlatButton(

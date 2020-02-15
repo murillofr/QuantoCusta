@@ -33,6 +33,7 @@ dependencies:
   intl: ^0.16.0
   giffy_dialog: ^1.6.1
   loading: ^1.0.2
+  http: ^0.12.0+4
 
 dev_dependencies:
   flutter_test:
@@ -52,9 +53,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/cajuba.png
-    - assets/omo.png
-    - assets/qualy.png
+    - assets/clubsocial.png
+    - assets/desodorante.png
+    - assets/negresco.png
     - assets/space_demo.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see

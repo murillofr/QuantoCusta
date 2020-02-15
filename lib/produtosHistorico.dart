@@ -29,8 +29,7 @@ class ProdutosHistorico extends StatefulWidget {
         ProdutoAtivoModel(
           barcode: produto["barcode"],
           nome: produto["nome"],
-          unidadeMedida: produto["unidadeMedida"],
-          quantidade: produto["quantidade"],
+          descricao: produto["descricao"],
           valor: produto["valor"],
           imagem: produto["imagem"],
           data: data,
@@ -95,8 +94,7 @@ class ProdutosHistoricoState extends State<ProdutosHistorico>
                   ),
                 ),
                 subtitle: Text(
-                  produto.quantidade +
-                      produto.unidadeMedida +
+                  produto.descricao +
                       "\nValor Unitário: R\$ " +
                       produto.valor,
                   style: TextStyle(
@@ -196,8 +194,7 @@ class ProdutoAtivoModel {
   ProdutoAtivoModel({
     this.barcode,
     this.nome,
-    this.unidadeMedida,
-    this.quantidade,
+    this.descricao,
     this.valor,
     this.imagem,
     this.data,
@@ -205,8 +202,7 @@ class ProdutoAtivoModel {
   });
   String barcode;
   String nome;
-  String unidadeMedida;
-  String quantidade;
+  String descricao;
   String valor;
   String imagem;
   String data;
@@ -219,8 +215,7 @@ class ProdutoAtivoModel {
           runtimeType == other.runtimeType &&
           barcode == other.barcode &&
           nome == other.nome &&
-          unidadeMedida == other.unidadeMedida &&
-          quantidade == other.quantidade &&
+          descricao == other.descricao &&
           valor == other.valor &&
           imagem == other.imagem &&
           data == other.data &&
@@ -230,8 +225,7 @@ class ProdutoAtivoModel {
   int get hashCode =>
       barcode.hashCode ^
       nome.hashCode ^
-      unidadeMedida.hashCode ^
-      quantidade.hashCode ^
+      descricao.hashCode ^
       valor.hashCode ^
       imagem.hashCode ^
       data.hashCode ^

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:quanto_custa/navCustomPainter.dart';
@@ -10,18 +12,56 @@ import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:quanto_custa/produtosAtivos.dart';
 import 'package:quanto_custa/produtosHistorico.dart';
 
+class Post {
+  final String barCode;
+  final String description;
+  final int id;
+  final String imgUrl;
+  final String name;
+  final double price;
+
+  Post({
+    this.barCode,
+    this.description,
+    this.id,
+    this.imgUrl,
+    this.name,
+    this.price,
+  });
+
+  factory Post.fromJson(Map<String, dynamic> json) => Post(
+        barCode: json["barCode"],
+        description: json["description"],
+        id: json["id"],
+        imgUrl: json["imgUrl"],
+        name: json["name"],
+        price: json["price"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "barCode": barCode,
+        "description": description,
+        "id": id,
+        "imgUrl": imgUrl,
+        "name": name,
+        "price": price,
+      };
+}
+
 class BarcodePage extends StatefulWidget {
   final String resultBarcode;
   final String inOutScan;
   final int page;
   final GlobalKey bottomNavigationKey;
+  final Future<Post> post;
 
   const BarcodePage(
       {Key key,
       this.resultBarcode,
       this.inOutScan,
       this.page,
-      this.bottomNavigationKey})
+      this.bottomNavigationKey,
+      this.post})
       : super(key: key);
 
   @override
@@ -30,28 +70,25 @@ class BarcodePage extends StatefulWidget {
 
 List<Map<String, String>> jsonProdutos = [
   {
-    "barcode": "7891321063293",
-    "nome": "Café Cajubá",
-    "unidadeMedida": "g",
-    "quantidade": "500",
-    "valor": "6,95",
-    "imagem": "assets/cajuba.png",
+    "barcode": "7891000023808",
+    "nome": "Negresco",
+    "descricao": "Biscoito Recheado Negresco 140g",
+    "valor": "1,50",
+    "imagem": "assets/negresco.png",
   },
   {
-    "barcode": "7891360623090",
-    "nome": "Margarina Qualy",
-    "unidadeMedida": "g",
-    "quantidade": "500",
-    "valor": "5,50",
-    "imagem": "assets/qualy.png",
+    "barcode": "7622210782281",
+    "nome": "Club Social Crostini",
+    "descricao": "Club Social Crostini - Sabor original 20g",
+    "valor": "1,00",
+    "imagem": "assets/clubsocial.png",
   },
   {
-    "barcode": "7897629207452",
-    "nome": "Sabão em pó Omo Multiação",
-    "unidadeMedida": "kg",
-    "quantidade": "1",
-    "valor": "12,40",
-    "imagem": "assets/omo.png",
+    "barcode": "7899846061442",
+    "nome": "Desodorante Todo Dia",
+    "descricao": "Desodorante Natura Todo Dia 80g",
+    "valor": "17,00",
+    "imagem": "assets/desodorante.png",
   },
 ];
 
@@ -63,7 +100,7 @@ class _BarcodePageState extends State<BarcodePage> {
   DateTime nowExpired;
   String dataLeitura = '';
   String horaLeitura = '';
-  Duration tempoExpiracaoScan = Duration(seconds: 10);
+  Duration tempoExpiracaoScan = Duration(seconds: 30);
   double valorTotalProduto;
   NumberFormat formatPreco = NumberFormat("#.00", "pt");
   bool addProdutoLista = false;
@@ -71,6 +108,8 @@ class _BarcodePageState extends State<BarcodePage> {
   bool botaoAddProdutoAtivado = true;
   bool refazLeitura;
   int qtdProduto = 1;
+  http.Response response;
+  String restOk = '';
 
   @override
   void initState() {
@@ -108,7 +147,29 @@ class _BarcodePageState extends State<BarcodePage> {
     super.didUpdateWidget(oldWidget);
   }
 
+  Future<Post> fetchPost(barcode) async {
+    var resultBarcode = barcode;
+    response = await http.get(
+        'https://howmuch-app.herokuapp.com/products/barcode/$resultBarcode');
+    if (response.statusCode == 200) {
+      setState(() => {
+            restOk = 'ok',
+            valorTotalProduto = Post.fromJson(json.decode(response.body)).price
+          });
+      // If the call to the server was successful, parse the JSON
+      return Post.fromJson(json.decode(response.body));
+    } else {
+      setState(() => {restOk = 'erro'});
+      // If that call was not successful, throw an error.
+      print('Falha ao localizar produto');
+      throw Exception('Falha ao localizar produto');
+    }
+  }
+
   void _getProduto() {
+    setState(() => {restOk = 'loading'});
+    fetchPost(widget.resultBarcode);
+
     for (var i = 0; i < jsonProdutos.length; i++) {
       if (jsonProdutos[i]['barcode'] == widget.resultBarcode) {
         setState(() {
@@ -223,7 +284,9 @@ class _BarcodePageState extends State<BarcodePage> {
                         child: Container(
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                            child: buildInfosProduto(),
+                            child: restOk == 'ok'
+                                ? buildInfosProduto()
+                                : Container(),
                           ),
                         ),
                       ),
@@ -262,26 +325,62 @@ class _BarcodePageState extends State<BarcodePage> {
                     child: widget.resultBarcode == ''
                         ? Container(
                             padding: EdgeInsets.only(top: 22.0),
-                            child: Text('LOGO DO APP'),
+                            child: RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                // set the default style for the children TextSpans
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .body1
+                                    .copyWith(fontSize: 75),
+                                children: [
+                                  TextSpan(
+                                      text: 'Q',
+                                      style: TextStyle(color: Colors.white)),
+                                  TextSpan(
+                                      text: 'UANTO\n',
+                                      style: TextStyle(color: Colors.black)),
+                                  TextSpan(
+                                      text: 'C',
+                                      style: TextStyle(color: Colors.white)),
+                                  TextSpan(
+                                    text: 'USTA',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  TextSpan(
+                                    text: '                                             ',
+                                    style: TextStyle(fontSize: 2.0),
+                                  ),
+                                  TextSpan(
+                                    text: '?',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
                           )
-                        : produto.length > 0
-                            ? Image(
-                                image: AssetImage(
-                                  produto["imagem"],
-                                ),
+                        : restOk == 'ok'
+                            ? Image.network(
+                                Post.fromJson(json.decode(response.body))
+                                    .imgUrl,
                               )
                             : Container(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(Icons.error_outline, size: 100.0),
-                                    Text(
-                                      'PRODUTO NÃO LOCALIZADO',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  ],
+                                  children: restOk == 'erro'
+                                      ? <Widget>[
+                                          Icon(Icons.error_outline,
+                                              size: 100.0),
+                                          Text(
+                                            'PRODUTO NÃO LOCALIZADO',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ]
+                                      : <Widget>[
+                                          CircularProgressIndicator(),
+                                        ],
                                 ),
                               ),
                   ),
@@ -365,34 +464,32 @@ class _BarcodePageState extends State<BarcodePage> {
         Flexible(
           child: widget.resultBarcode == ''
               ? Container()
-              : produto.length > 0
-                  ? Container(
-                      padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 5.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center, //.center
-                        crossAxisAlignment: CrossAxisAlignment.center,
+              : Container(
+                  padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center, //.center
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      buildNomeProduto(),
+                      SizedBox(height: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          buildNomeProduto(),
-                          SizedBox(height: 10.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 3,
-                                child: buildPrecoProduto(),
-                              ),
-                              SizedBox(width: 10.0),
-                              Expanded(
-                                flex: 4,
-                                child: buildQtdBotaoAdd(),
-                              ),
-                            ],
+                          Expanded(
+                            flex: 3,
+                            child: buildPrecoProduto(),
+                          ),
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            flex: 4,
+                            child: buildQtdBotaoAdd(),
                           ),
                         ],
                       ),
-                    )
-                  : Container(),
+                    ],
+                  ),
+                ),
         ),
       ],
     );
@@ -420,7 +517,9 @@ class _BarcodePageState extends State<BarcodePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            produto["nome"],
+                            restOk == 'ok'
+                                ? Post.fromJson(json.decode(response.body)).name
+                                : '',
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
@@ -431,7 +530,10 @@ class _BarcodePageState extends State<BarcodePage> {
                             ),
                           ),
                           Text(
-                            produto["quantidade"] + produto["unidadeMedida"],
+                            restOk == 'ok'
+                                ? Post.fromJson(json.decode(response.body))
+                                    .description
+                                : '',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -518,7 +620,11 @@ class _BarcodePageState extends State<BarcodePage> {
                                 child: FittedBox(
                                   fit: BoxFit.contain,
                                   child: Text(
-                                    produto["valor"],
+                                    restOk == 'ok'
+                                        ? formatPreco.format(Post.fromJson(
+                                                json.decode(response.body))
+                                            .price)
+                                        : '',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 33.0),
@@ -611,7 +717,9 @@ class _BarcodePageState extends State<BarcodePage> {
                                     text: 'Reporte do produto\n',
                                   ),
                                   TextSpan(
-                                      text: produto["nome"],
+                                      text: Post.fromJson(
+                                              json.decode(response.body))
+                                          .name,
                                       style: TextStyle(color: Colors.blue)),
                                   TextSpan(
                                     text: '\nenviado com sucesso. Obrigado!',
@@ -693,12 +801,13 @@ class _BarcodePageState extends State<BarcodePage> {
                                     onPressed: botaoAddProdutoAtivado
                                         ? (qtdProduto > 1)
                                             ? () {
-                                                var v = produto["valor"]
-                                                    .replaceAll(',', '.');
                                                 setState(() {
                                                   qtdProduto--;
                                                   valorTotalProduto =
-                                                      double.parse(v) *
+                                                      Post.fromJson(json.decode(
+                                                                  response
+                                                                      .body))
+                                                              .price *
                                                           qtdProduto;
                                                 });
                                               }
@@ -738,12 +847,13 @@ class _BarcodePageState extends State<BarcodePage> {
                                     onPressed: botaoAddProdutoAtivado
                                         ? (qtdProduto < 99)
                                             ? () {
-                                                var v = produto["valor"]
-                                                    .replaceAll(',', '.');
                                                 setState(() {
                                                   qtdProduto++;
                                                   valorTotalProduto =
-                                                      double.parse(v) *
+                                                      Post.fromJson(json.decode(
+                                                                  response
+                                                                      .body))
+                                                              .price *
                                                           qtdProduto;
                                                 });
                                               }
